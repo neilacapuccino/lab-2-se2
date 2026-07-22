@@ -1,0 +1,148 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, Helvetica, sans-serif;
+    background:#f3f3f3;
+}
+
+/* Header */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #131921;
+    padding: 15px 25px;
+    color: white;
+}
+
+.logo {
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.header-links {
+    display: flex;
+    gap: 25px;
+}
+
+.header-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.logo{
+    font-size:28px;
+    font-weight:bold;
+}
+
+.search-container {
+    display: flex;
+    flex: 1;
+    max-width: 700px;
+    margin: 0 30px;
+}
+
+.search-input{
+    flex:1;
+    padding:12px;
+    border:none;
+    outline:none;
+    font-size:16px;
+
+    border-radius:6px 0 0 6px;
+}
+
+.search-btn{
+    width:60px;
+    border:none;
+    cursor:pointer;
+    background:#febd69;
+    font-size:20px;
+
+    border-radius:0 6px 6px 0;
+}
+
+.search-btn:hover{
+    background:#f3a847;
+}
+
+.header-links{
+    display:flex;
+    gap:20px;
+}
+
+.header-links a{
+    color:white;
+    text-decoration:none;
+}
+
+/* Hero */
+
+.hero{
+    height:300px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    background:linear-gradient(to right,#1976d2,#42a5f5);
+
+    color:white;
+}
+
+.hero h1{
+    font-size:48px;
+}
+
+.hero p{
+    margin-top:10px;
+    font-size:20px;
+}
+
+/* Products */
+
+.products{
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+    gap:20px;
+
+    padding:40px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    border-radius:10px;
+    text-align:center;
+    transition:transform .2s ease;
+    box-shadow:0 4px 8px rgba(0,0,0,.1);
+    cursor:pointer;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+.card img {
+    width: 100%;
+    height: 250px;
+    object-fit: contain;
+    background: white;
+}
+
+.card h3{
+    margin:15px 0;
+}
+
+.card p{
+    color:#1976d2;
+    font-weight:bold;
+}
