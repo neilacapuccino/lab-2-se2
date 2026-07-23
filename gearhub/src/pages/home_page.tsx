@@ -4,7 +4,7 @@ import school_supplies from "../assets/school_supplies.jpg";
 import gadget from "../assets/gadget.jpg";
 import toys from "../assets/toys.jpg";
 
-export default function MainPage() {
+export default function HomePage() {
   // State
   const [search, setSearch] = useState("");
 
