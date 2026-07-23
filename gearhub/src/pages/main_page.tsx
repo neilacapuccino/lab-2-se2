@@ -1,8 +1,8 @@
 import { useState } from "react";
-import "../styles/main_page.css";
-import keyboard from "../assets/keyboard.jpg";
-import mouse from "../assets/mouse.jpg";
-import headset from "../assets/headset.jpg";
+import "../styles/home_page.css";
+import school_supplies from "../assets/school_supplies.jpg";
+import gadget from "../assets/gadget.jpg";
+import toys from "../assets/toys.jpg";
 
 export default function MainPage() {
   // State
@@ -11,19 +11,16 @@ export default function MainPage() {
   // Products
   const products = [
     {
-      name: "Mechanical Keyboard",
-      price: "$59.99",
-      image: keyboard,
+      name: "School Supplies",
+      image: school_supplies,
     },
     {
-      name: "Gaming Mouse",
-      price: "$39.99",
-      image: mouse,
+      name: "Gadgets",
+      image: gadget,
     },
     {
-      name: "Wireless Headset",
-      price: "$89.99",
-      image: headset,
+      name: "Toys",
+      image: toys,
     },
   ];
 
@@ -33,7 +30,7 @@ export default function MainPage() {
   );
 
   return (
-    <div className="main-page">
+    <div className="home-page">
 
       {/* Header */}
       <header className="header">
@@ -68,7 +65,6 @@ export default function MainPage() {
           <div className="card" key={index}>
             <img src={product.image} alt={product.name} />
             <h3>{product.name}</h3>
-            <p>{product.price}</p>
           </div>
         ))}
       </section>
