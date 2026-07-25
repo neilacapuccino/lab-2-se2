@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import "../styles/home_page.css";
 import school_supplies from "../assets/school_supplies.jpg";
 import gadget from "../assets/gadget.jpg";
@@ -13,6 +14,7 @@ export default function HomePage() {
     {
       name: "School Supplies",
       image: school_supplies,
+      link: "/school-supplies",
     },
     {
       name: "Gadgets",
@@ -61,12 +63,24 @@ export default function HomePage() {
 
       {/* Products */}
       <section className="products">
-        {filteredProducts.map((product, index) => (
-          <div className="card" key={index}>
-            <img src={product.image} alt={product.name} />
-            <h3>{product.name}</h3>
-          </div>
-        ))}
+        {filteredProducts.map((product, index) => {
+          const productCard = (
+            <div className="card">
+              <img src={product.image} alt={product.name} />
+              <h3>{product.name}</h3>
+            </div>
+          );
+
+          return product.link ? (
+            <Link key={index} to={product.link} className="card-link">
+              {productCard}
+            </Link>
+          ) : (
+            <div key={index} className="card-link">
+              {productCard}
+            </div>
+          );
+        })}
       </section>
 
     </div>
