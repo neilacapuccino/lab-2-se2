@@ -4,6 +4,7 @@ import notebook from "../assets/notebook.jpg";
 import pen from "../assets/pen.jpg";
 import pencil from "../assets/pencil.jpg";
 import eraser from "../assets/eraser.jpg";
+import highlights from "../assets/highlights.jpg"
 
 export default function SchoolSupplies() {
   const products = [
@@ -30,6 +31,12 @@ export default function SchoolSupplies() {
       name: "Eraser",
       price: "₱50",
       image: eraser,
+    },
+    {
+      id: 5,
+      name: "Highlighters",
+      price: "₱60",
+      image: highlights,
     },
   ];
 
