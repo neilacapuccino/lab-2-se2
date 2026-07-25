@@ -56,3 +56,57 @@
 .product-card button:hover {
   background: #1658c0;
 }
+
+.back-btn {
+  display: inline-block;
+  margin-bottom: 20px;
+  text-decoration: none;
+  color: #2563eb;
+  font-weight: bold;
+}
+
+.back-btn:hover {
+  text-decoration: underline;
+}
+
+.back-btn {
+  display: inline-block;
+  margin-bottom: 20px;
+  text-decoration: none;
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.back-btn:hover {
+  text-decoration: underline;
+}
+
+.page-description {
+  text-align: center;
+  color: #666;
+  margin-bottom: 35px;
+}
+
+.price {
+  color: #2e7d32;
+  font-size: 18px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.add-cart-btn {
+  width: 100%;
+  padding: 10px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: 0.3s;
+}
+
+.add-cart-btn:hover {
+  background: #1d4ed8;
+}

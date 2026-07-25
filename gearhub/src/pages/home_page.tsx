@@ -19,10 +19,12 @@ export default function HomePage() {
     {
       name: "Gadgets",
       image: gadget,
+      link: "/gadgets"
     },
     {
       name: "Toys",
       image: toys,
+      link: "/toys"
     },
   ];
 

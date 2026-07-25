@@ -1,5 +1,5 @@
+import { Link } from "react-router-dom";
 import "../styles/school_supplies.css";
-
 import notebook from "../assets/notebook.jpg";
 import pen from "../assets/pen.jpg";
 import pencil from "../assets/pencil.jpg";
@@ -34,6 +34,8 @@ export default function SchoolSupplies() {
   ];
 
   return (
+
+    
     <div className="school-page">
       <h1>School Supplies</h1>
 
