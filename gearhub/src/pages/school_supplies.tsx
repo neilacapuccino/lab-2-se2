@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import "../styles/school_supplies.css";
+import "../styles/product.css";
 import notebook from "../assets/notebook.jpg";
 import pen from "../assets/pen.jpg";
 import pencil from "../assets/pencil.jpg";

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import "../styles/gadgets.css";
+import "../styles/product.css";
 import phone from "../assets/phone.jpg";
 import laptop from "../assets/laptop.jpg"
 import headset from "../assets/headset.jpg";
@@ -41,8 +41,8 @@ export default function Gadgets() {
     ];
 
     return (
-        <div className="gadget-page">
-            <h1>Gadgets</h1>
+        <div className="school-page">
+            <h1>Toys</h1>
 
             <div className="products-grid">
                 {products.map((product) => (
