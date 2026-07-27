@@ -38,7 +38,11 @@ export default function Toys() {
       price: "₱150",
       image: kitty,
     },
-  ];
+  ].sort((a, b) => {
+    const priceA = Number(a.price.replace(/[^\d]/g, ""));
+    const priceB = Number(b.price.replace(/[^\d]/g, ""));
+    return priceA - priceB;
+  });
 
   return (
 

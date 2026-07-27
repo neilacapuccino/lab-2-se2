@@ -38,7 +38,11 @@ export default function SchoolSupplies() {
       price: "₱60",
       image: highlights,
     },
-  ];
+  ].slice().sort((a, b) => {
+    const priceA = Number(a.price.replace(/[^\d]/g, ""));
+    const priceB = Number(b.price.replace(/[^\d]/g, ""));
+    return priceA - priceB;
+  });
 
   return (
 

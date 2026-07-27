@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-
 import "../styles/product.css";
 import phone from "../assets/phone.jpg";
 import laptop from "../assets/laptop.jpg"
@@ -38,7 +36,11 @@ export default function Gadgets() {
             price: "₱459",
             image: mouse,
         },
-    ];
+    ].slice().sort((a, b) => {
+        const priceA = Number(a.price.replace(/[^\d]/g, ""));
+        const priceB = Number(b.price.replace(/[^\d]/g, ""));
+        return priceA - priceB;
+    });
 
     return (
         <div className="school-page">
