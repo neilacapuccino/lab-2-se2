@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import "../styles/product.css";
 import pop from "../assets/pop.jpg";
 import teddy from "../assets/teddy.jpg";

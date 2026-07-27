@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import "../styles/product.css";
 import notebook from "../assets/notebook.jpg";
 import pen from "../assets/pen.jpg";
