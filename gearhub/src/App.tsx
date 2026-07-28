@@ -1,20 +1,25 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { products } from './data/products';
+import { CATEGORIES } from './types';
 
-import HomePage from "./pages/home_page";
-import SchoolSupplies from "./pages/school_supplies";
-import Gadgets from "./pages/gadgets";
-import Toys from "./pages/toys";
-
+/**
+ * Temporary shell. Part 2 replaces this with the real GearHub layout —
+ * for now it just proves the catalogue is wired up and loading.
+ */
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/school-supplies" element={<SchoolSupplies />} />
-        <Route path="/gadgets" element={<Gadgets />} />
-        <Route path="/toys" element={<Toys />} />
-      </Routes>
-    </BrowserRouter>
+    <div className="mx-auto max-w-3xl p-8">
+      <h1 className="text-2xl font-bold text-slate-900">GearHub</h1>
+      <p className="mt-2 text-slate-600">
+        {products.length} products across {CATEGORIES.length - 1} categories.
+      </p>
+      <ul className="mt-6 space-y-1">
+        {CATEGORIES.filter((c) => c !== 'All').map((category) => (
+          <li key={category} className="text-sm text-slate-700">
+            {category} — {products.filter((p) => p.category === category).length}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
