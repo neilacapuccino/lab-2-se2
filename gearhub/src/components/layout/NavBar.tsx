@@ -26,8 +26,8 @@ export default function NavBar({
   onCartClick,
 }: NavBarProps) {
   return (
-    <header className="sticky top-0 z-30 border-b border-[#E2E8F0] bg-white">
-      <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between gap-6 px-10">
+    <header className="sticky top-0 z-30 h-[72px] border-b border-[#E2E8F0] bg-white">
+      <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-6 px-10">
         <span className="text-[18px] font-extrabold tracking-tight text-[#0F172A]">
           GearHub
         </span>
