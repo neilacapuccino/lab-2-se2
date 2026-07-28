@@ -1,3 +1,7 @@
+@import "tailwindcss";
+
+/* Kept from the pre-Tailwind setup so the existing category pages
+   (toys / gadgets / school supplies) keep rendering as before. */
 * {
   margin: 0;
   padding: 0;
