@@ -1,43 +1,23 @@
-[
-  { "id": "hp-01", "name": "Apple AirPods Max", "category": "Headphones", "price": 549.0, "image": "/products/headphones.webp", "inStock": true },
-  { "id": "hp-02", "name": "Sony WH-1000XM5", "category": "Headphones", "price": 399.99, "image": "/products/headphones.webp", "inStock": true },
-  { "id": "hp-03", "name": "Bose QuietComfort Ultra", "category": "Headphones", "price": 429.0, "image": "/products/headphones.webp", "inStock": true },
-  { "id": "hp-04", "name": "Sennheiser Momentum 4", "category": "Headphones", "price": 349.95, "image": "/products/headphones.webp", "inStock": false },
-  { "id": "hp-05", "name": "Beats Studio Pro", "category": "Headphones", "price": 349.99, "image": "/products/headphones.webp", "inStock": true },
-
-  { "id": "ch-01", "name": "Apple 20W USB-C Power Adapter", "category": "Chargers", "price": 19.0, "image": "/products/chargers.webp", "inStock": true },
-  { "id": "ch-02", "name": "Anker 735 GaN Charger 65W", "category": "Chargers", "price": 55.99, "image": "/products/chargers.webp", "inStock": true },
-  { "id": "ch-03", "name": "Belkin BoostCharge Pro 30W", "category": "Chargers", "price": 34.99, "image": "/products/chargers.webp", "inStock": true },
-  { "id": "ch-04", "name": "UGREEN Nexode 100W", "category": "Chargers", "price": 79.99, "image": "/products/chargers.webp", "inStock": true },
-  { "id": "ch-05", "name": "Baseus GaN5 Pro 65W", "category": "Chargers", "price": 45.99, "image": "/products/chargers.webp", "inStock": false },
-
-  { "id": "sp-01", "name": "Amazon Echo Plus", "category": "Speakers", "price": 149.99, "image": "/products/speakers.webp", "inStock": true },
-  { "id": "sp-02", "name": "Sonos One SL", "category": "Speakers", "price": 199.0, "image": "/products/speakers.webp", "inStock": true },
-  { "id": "sp-03", "name": "JBL Flip 6", "category": "Speakers", "price": 129.95, "image": "/products/speakers.webp", "inStock": true },
-  { "id": "sp-04", "name": "Bose SoundLink Flex", "category": "Speakers", "price": 149.0, "image": "/products/speakers.webp", "inStock": true },
-  { "id": "sp-05", "name": "Marshall Emberton II", "category": "Speakers", "price": 169.99, "image": "/products/speakers.webp", "inStock": true },
-
-  { "id": "kb-01", "name": "Apple Magic Keyboard", "category": "Keyboards", "price": 99.0, "image": "/products/keyboards.png", "inStock": true },
-  { "id": "kb-02", "name": "Logitech MX Keys S", "category": "Keyboards", "price": 109.99, "image": "/products/keyboards.png", "inStock": true },
-  { "id": "kb-03", "name": "Keychron K2 Pro", "category": "Keyboards", "price": 109.0, "image": "/products/keyboards.png", "inStock": true },
-  { "id": "kb-04", "name": "Razer BlackWidow V4", "category": "Keyboards", "price": 169.99, "image": "/products/keyboards.png", "inStock": false },
-  { "id": "kb-05", "name": "Corsair K70 RGB Pro", "category": "Keyboards", "price": 159.99, "image": "/products/keyboards.png", "inStock": true },
-
-  { "id": "ms-01", "name": "Logitech MX Master 3S", "category": "Mice", "price": 99.99, "image": "/products/mice.jpg", "inStock": true },
-  { "id": "ms-02", "name": "Razer DeathAdder V3 Pro", "category": "Mice", "price": 149.99, "image": "/products/mice.jpg", "inStock": true },
-  { "id": "ms-03", "name": "Logitech G Pro X Superlight 2", "category": "Mice", "price": 159.99, "image": "/products/mice.jpg", "inStock": true },
-  { "id": "ms-04", "name": "Apple Magic Mouse", "category": "Mice", "price": 79.0, "image": "/products/mice.jpg", "inStock": true },
-  { "id": "ms-05", "name": "SteelSeries Rival 3", "category": "Mice", "price": 29.99, "image": "/products/mice.jpg", "inStock": false },
-
-  { "id": "mc-01", "name": "AKG C214 Condenser", "category": "Microphones", "price": 399.0, "image": "/products/microphones.jpg", "inStock": true },
-  { "id": "mc-02", "name": "Blue Yeti USB", "category": "Microphones", "price": 129.99, "image": "/products/microphones.jpg", "inStock": true },
-  { "id": "mc-03", "name": "Shure SM7B", "category": "Microphones", "price": 399.0, "image": "/products/microphones.jpg", "inStock": true },
-  { "id": "mc-04", "name": "Rode NT-USB+", "category": "Microphones", "price": 169.0, "image": "/products/microphones.jpg", "inStock": true },
-  { "id": "mc-05", "name": "HyperX QuadCast S", "category": "Microphones", "price": 159.99, "image": "/products/microphones.jpg", "inStock": true },
-
-  { "id": "wc-01", "name": "Logitech C922 Pro HD", "category": "Webcams", "price": 99.99, "image": "/products/webcams.jpg", "inStock": true },
-  { "id": "wc-02", "name": "Logitech Brio 4K", "category": "Webcams", "price": 199.99, "image": "/products/webcams.jpg", "inStock": true },
-  { "id": "wc-03", "name": "Razer Kiyo Pro", "category": "Webcams", "price": 129.99, "image": "/products/webcams.jpg", "inStock": true },
-  { "id": "wc-04", "name": "Elgato Facecam", "category": "Webcams", "price": 149.99, "image": "/products/webcams.jpg", "inStock": false },
-  { "id": "wc-05", "name": "Microsoft LifeCam HD-3000", "category": "Webcams", "price": 39.99, "image": "/products/webcams.jpg", "inStock": true }
+﻿[
+  { "id": "hp-01", "name": "Apple AirPods Max", "category": "Headphones", "price": 549, "image": "/products/hp-01.jpg", "inStock": true },
+  { "id": "hp-02", "name": "Bose QuietComfort 35 II", "category": "Headphones", "price": 299, "image": "/products/hp-02.jpg", "inStock": true },
+  { "id": "ch-01", "name": "Apple 5W USB Power Adapter", "category": "Chargers", "price": 19, "image": "/products/ch-01.jpg", "inStock": true },
+  { "id": "ch-02", "name": "Universal USB Wall Charger", "category": "Chargers", "price": 14.99, "image": "/products/ch-02.jpg", "inStock": false },
+  { "id": "ch-03", "name": "Lenovo 65W AC Adapter", "category": "Chargers", "price": 39.99, "image": "/products/ch-03.jpg", "inStock": true },
+  { "id": "sp-01", "name": "Amazon Echo", "category": "Speakers", "price": 99.99, "image": "/products/sp-01.jpg", "inStock": true },
+  { "id": "sp-02", "name": "JBL Flip 3", "category": "Speakers", "price": 89.95, "image": "/products/sp-02.jpg", "inStock": true },
+  { "id": "sp-03", "name": "Bose SoundLink Flex", "category": "Speakers", "price": 149, "image": "/products/sp-03.jpg", "inStock": true },
+  { "id": "kb-01", "name": "Apple Magic Keyboard", "category": "Keyboards", "price": 99, "image": "/products/kb-01.jpg", "inStock": true },
+  { "id": "kb-02", "name": "Logitech K380", "category": "Keyboards", "price": 49.99, "image": "/products/kb-02.jpg", "inStock": true },
+  { "id": "kb-03", "name": "Das Keyboard Model S", "category": "Keyboards", "price": 169, "image": "/products/kb-03.jpg", "inStock": true },
+  { "id": "kb-04", "name": "Microsoft Natural Keyboard", "category": "Keyboards", "price": 59.99, "image": "/products/kb-04.jpg", "inStock": false },
+  { "id": "ms-01", "name": "Logitech MX Master 3S", "category": "Mice", "price": 99.99, "image": "/products/ms-01.jpg", "inStock": true },
+  { "id": "ms-02", "name": "Apple Magic Mouse", "category": "Mice", "price": 79, "image": "/products/ms-02.jpg", "inStock": true },
+  { "id": "ms-03", "name": "Logitech Pro X Superlight 2", "category": "Mice", "price": 159.99, "image": "/products/ms-03.jpg", "inStock": false },
+  { "id": "mc-01", "name": "AKG C214 Condenser", "category": "Microphones", "price": 399, "image": "/products/mc-01.jpg", "inStock": true },
+  { "id": "mc-02", "name": "Blue Yeti Blackout", "category": "Microphones", "price": 129.99, "image": "/products/mc-02.jpg", "inStock": true },
+  { "id": "mc-03", "name": "Shure SM58", "category": "Microphones", "price": 109, "image": "/products/mc-03.jpg", "inStock": true },
+  { "id": "wc-01", "name": "Microsoft LifeCam HD-5000", "category": "Webcams", "price": 49.99, "image": "/products/wc-01.jpg", "inStock": true },
+  { "id": "wc-02", "name": "Logitech QuickCam", "category": "Webcams", "price": 39.99, "image": "/products/wc-02.jpg", "inStock": false }
 ]
+
