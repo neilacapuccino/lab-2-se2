@@ -36,11 +36,16 @@ export const CATEGORIES = [
   'All',
   'Headphones',
   'Chargers',
-  'Cases',
-  'Cables',
+  'Speakers',
   'Keyboards',
   'Mice',
+  'Cables',
+  'Accessories',
 ] as const;
 
-/** Upper bound of the price range slider, matching the design's "Max: $250". */
-export const MAX_PRICE = 250;
+/**
+ * Upper bound of the price range slider. The design labels this "Max: $250",
+ * but the catalogue tops out at $549.99, so the ceiling is raised to keep
+ * every product reachable.
+ */
+export const MAX_PRICE = 600;
