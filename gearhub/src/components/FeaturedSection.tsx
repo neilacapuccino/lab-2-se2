@@ -71,7 +71,12 @@ export default function FeaturedSection({
         </div>
 
         <div className="flex-1">
-          <div className="h-[300px] w-full rounded-[18px] border border-dashed border-[#CBD5E1] bg-[#EEF2F7]" />
+          {/* Photo by Luke Chesser, released under CC0 via Wikimedia Commons. */}
+          <img
+            src="/hero.jpg"
+            alt="A tidy desk with a desktop computer, keyboard and notebook"
+            className="h-[300px] w-full rounded-[18px] object-cover shadow-[0_10px_30px_rgba(15,23,42,0.12)] max-[1024px]:h-[240px]"
+          />
         </div>
       </section>
 
