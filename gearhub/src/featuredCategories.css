@@ -106,3 +106,14 @@
         grid-template-columns: 1fr;
     }
 }
+.category-card {
+    text-decoration: none;
+    color: inherit;
+    background: white;
+    border-radius: 18px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid #e5e7eb;
+    transition: .3s;
+}

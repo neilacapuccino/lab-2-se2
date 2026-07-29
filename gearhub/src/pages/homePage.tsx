@@ -1,25 +1,7 @@
 import "../homePage.css";
-
-// Hero Image
 import heroImage from "../assets/products/hero.jpg";
-
-// Product Images
-import headphone from "../assets/products/hp-01.jpg";
-import charger from "../assets/products/charger.jpg";
-import phoneCase from "../assets/products/phoneCase.jpg";
-import cable from "../assets/products/cable.jpg";
-import keyboard from "../assets/products/kb-03.jpg";
-import mouse from "../assets/products/ms-02.jpg";
 import FeaturedCategories from "../components/featuredCategories";
-
-interface Product {
-  id: number;
-  category: string;
-  name: string;
-  price: number;
-  image: string;
-  stock: boolean;
-}
+import { products } from "../data/products";
 
 interface HomePageProps {
   searchQuery: string;
@@ -30,57 +12,6 @@ export default function HomePage({
   searchQuery,
   category,
 }: HomePageProps) {
-  const products: Product[] = [
-    {
-      id: 1,
-      category: "Headphones",
-      name: "Pro Wireless ANC Headphones",
-      price: 189.99,
-      image: headphone,
-      stock: true,
-    },
-    {
-      id: 2,
-      category: "Chargers",
-      name: "100W GaN Desktop Charger",
-      price: 69.99,
-      image: charger,
-      stock: true,
-    },
-    {
-      id: 3,
-      category: "Cases",
-      name: "Carbon Fiber MagSafe Case",
-      price: 34.99,
-      image: phoneCase,
-      stock: true,
-    },
-    {
-      id: 4,
-      category: "Cables",
-      name: "USB-C DisplayPort Braided Cable",
-      price: 24.99,
-      image: cable,
-      stock: true,
-    },
-    {
-      id: 5,
-      category: "Keyboards",
-      name: "Mechanical Wireless Keyboard 75%",
-      price: 129.99,
-      image: keyboard,
-      stock: true,
-    },
-    {
-      id: 6,
-      category: "Mouse",
-      name: "Precision Wireless Mouse",
-      price: 89.99,
-      image: mouse,
-      stock: false,
-    },
-  ];
-
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name
       .toLowerCase()
@@ -162,12 +93,12 @@ export default function HomePage({
 
                     <span
                       className={
-                        product.stock
+                        product.inStock
                           ? "stock in"
                           : "stock out"
                       }
                     >
-                      {product.stock
+                      {product.inStock
                         ? "• In Stock"
                         : "• Out of Stock"}
                     </span>

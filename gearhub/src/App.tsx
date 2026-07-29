@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import NavBar from "./components/layout/NavBar";
 import HomePage from "./pages/homePage";
+import CategoryPage from "./pages/CategoryPage";
 
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -19,7 +20,10 @@ function App() {
       />
 
       <Routes>
-        <Route path="/" element={<HomePage searchQuery={searchQuery} category={category} /> } />
+        <Route path="/" element={<HomePage searchQuery={searchQuery} category={category} />} />
+      </Routes>
+      <Routes>
+        <Route path="/category/:category" element={<CategoryPage />} />
       </Routes>
     </div>
   );

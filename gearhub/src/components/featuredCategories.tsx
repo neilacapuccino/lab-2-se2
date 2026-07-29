@@ -1,85 +1,46 @@
 import "../featuredCategories.css";
-import {
-  Headphones,
-  BatteryCharging,
-  Smartphone,
-  Cable,
-  Keyboard,
-  Mouse,
-} from "lucide-react";
+import React from "react";
+import type { LucideProps } from "lucide-react";
+import { Headphones, BatteryCharging, Phone, Plug } from "lucide-react";
 
 interface Category {
   id: number;
   name: string;
-  Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  description: string;
+  icon: React.ComponentType<LucideProps>;
 }
 
 const categories: Category[] = [
-  {
-    id: 1,
-    name: "Headphones",
-    Icon: Headphones,
-  },
-  {
-    id: 2,
-    name: "Chargers",
-    Icon: BatteryCharging,
-  },
-  {
-    id: 3,
-    name: "Cases",
-    Icon: Smartphone,
-  },
-  {
-    id: 4,
-    name: "Cables",
-    Icon: Cable,
-  },
-  {
-    id: 5,
-    name: "Keyboards",
-    Icon: Keyboard,
-  },
-  {
-    id: 6,
-    name: "Mouse",
-    Icon: Mouse,
-  },
+  { id: 1, name: "Headphones", description: "Explore All", icon: Headphones },
+  { id: 2, name: "Chargers", description: "Explore All", icon: BatteryCharging },
+  { id: 3, name: "Cases", description: "Explore All", icon: Phone },
+  { id: 4, name: "Cables", description: "Explore All", icon: Plug },
 ];
 
 export default function FeaturedCategories() {
   return (
     <section className="featured-categories">
-
       <div className="categories-header">
         <h2>Featured Categories</h2>
-
-        <button className="view-categories-btn">
-          View All Categories
-        </button>
+        <button className="view-categories-btn">View All Categories</button>
       </div>
 
       <div className="categories-grid">
         {categories.map((category) => {
-          const Icon = category.Icon;
+          const Icon = category.icon;
           return (
-            <div
-              className="category-card"
-              key={category.id}
-            >
+            <div key={category.id} className="category-card">
               <div className="category-icon">
-                <Icon className="category-svg" />
+                <Icon size={24} />
               </div>
-
               <div className="category-text">
                 <h3>{category.name}</h3>
-                <p>Explore All</p>
+                <p>{category.description}</p>
               </div>
             </div>
           );
         })}
       </div>
-
     </section>
   );
 }
