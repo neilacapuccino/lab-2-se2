@@ -1,32 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
-/* The design is set in Inter throughout. */
-@theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-}
-
-body {
-  font-family: var(--font-sans);
-}
-
 /*
- * Slim, unobtrusive scrollbars. Kept in `@layer base` so ordinary utilities can
- * still override anything here — unlayered rules would outrank them.
+ * Everything below sits in `@layer base` so ordinary utilities still win —
+ * unlayered rules outrank layered ones regardless of specificity.
  */
 @layer base {
-  /*
-   * Firefox only. Chromium ignores ::-webkit-scrollbar as soon as
-   * scrollbar-width is set, so this is fenced off to keep the custom
-   * 6px thumb below for browsers that support it.
-   */
-  @supports (-moz-appearance: none) {
-    * {
-      scrollbar-width: thin;
-      scrollbar-color: #cbd5e1 transparent;
-    }
+  /* The design is set in Inter throughout. */
+  body {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
   }
 
+  /* Slim, unobtrusive scrollbars. */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -47,5 +32,17 @@ body {
 
   ::-webkit-scrollbar-corner {
     background: transparent;
+  }
+
+  /*
+   * Firefox has no ::-webkit-scrollbar support, and Chromium ignores those
+   * rules as soon as scrollbar-width is set — so this is fenced off to Firefox
+   * and Chromium keeps the 6px thumb above.
+   */
+  @supports (-moz-appearance: none) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 transparent;
+    }
   }
 }
