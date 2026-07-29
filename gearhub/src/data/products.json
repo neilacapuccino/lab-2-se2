@@ -128,6 +128,27 @@
   { "id": "ch-15", "name": "Wireless Charging Stand", "category": "Chargers", "price": 29.99, "image": "/products/chargers/ch15.jpg", "inStock": true },
   { "id": "ch-16", "name": "20W USB-C Charger 2-Pack with Cables", "category": "Chargers", "price": 25.99, "image": "/products/chargers/ch16.jpg", "inStock": true },
   { "id": "ch-17", "name": "3-in-1 Charging Dock Black", "category": "Chargers", "price": 54.99, "image": "/products/chargers/ch17.jpg", "inStock": true },
-  { "id": "ch-18", "name": "Samsung 25W Charger with Cable", "category": "Chargers", "price": 23.99, "image": "/products/chargers/ch18.jpg", "inStock": true }
+  { "id": "ch-18", "name": "Samsung 25W Charger with Cable", "category": "Chargers", "price": 23.99, "image": "/products/chargers/ch18.jpg", "inStock": true },
+  { "id": "rt-01", "name": "Nighthawk Cable Modem Router", "category": "Routers", "price": 179.99, "image": "/products/routers/r1.jpg", "inStock": true },
+  { "id": "rt-02", "name": "NETGEAR Nighthawk AX Router", "category": "Routers", "price": 229.99, "image": "/products/routers/r2.jpg", "inStock": true },
+  { "id": "rt-03", "name": "GL.iNet Travel Router", "category": "Routers", "price": 39.99, "image": "/products/routers/r3.jpg", "inStock": true },
+  { "id": "rt-04", "name": "TP-Link Deco Mesh Unit", "category": "Routers", "price": 129.99, "image": "/products/routers/r4.jpg", "inStock": true },
+  { "id": "rt-05", "name": "NETGEAR Nighthawk Tri-Band", "category": "Routers", "price": 299.99, "image": "/products/routers/r5.jpg", "inStock": true },
+  { "id": "rt-06", "name": "TP-Link WiFi Range Extender", "category": "Routers", "price": 34.99, "image": "/products/routers/r6.jpg", "inStock": true },
+  { "id": "rt-07", "name": "TP-Link Archer Dual-Band Router", "category": "Routers", "price": 49.99, "image": "/products/routers/r7.jpg", "inStock": false },
+  { "id": "rt-08", "name": "TP-Link Archer AX10", "category": "Routers", "price": 69.99, "image": "/products/routers/r8.jpg", "inStock": true },
+  { "id": "rt-09", "name": "TP-Link Archer AX55", "category": "Routers", "price": 99.99, "image": "/products/routers/r9.jpg", "inStock": true },
+  { "id": "rt-10", "name": "TP-Link Archer A6", "category": "Routers", "price": 59.99, "image": "/products/routers/r10.jpg", "inStock": true },
+  { "id": "rt-11", "name": "NETGEAR Cable Modem Router", "category": "Routers", "price": 189.99, "image": "/products/routers/r11.jpg", "inStock": true },
+  { "id": "rt-12", "name": "ASUS ROG Rapture GT-AX6000", "category": "Routers", "price": 449.99, "image": "/products/routers/r12.jpg", "inStock": true },
+  { "id": "rt-13", "name": "TP-Link Omada Gigabit Router", "category": "Routers", "price": 89.99, "image": "/products/routers/r13.jpg", "inStock": true },
+  { "id": "rt-14", "name": "ASUS RT-AX3000 WiFi 6", "category": "Routers", "price": 149.99, "image": "/products/routers/r14.jpg", "inStock": false },
+  { "id": "rt-15", "name": "TP-Link Deco XE75 Mesh", "category": "Routers", "price": 199.99, "image": "/products/routers/r15.jpg", "inStock": true },
+  { "id": "rt-16", "name": "Gaming WiFi 6 Router RGB", "category": "Routers", "price": 249.99, "image": "/products/routers/r16.jpg", "inStock": true },
+  { "id": "rt-17", "name": "ASUS ROG Rapture Tower", "category": "Routers", "price": 399.99, "image": "/products/routers/r17.jpg", "inStock": true },
+  { "id": "rt-18", "name": "Tenda AC23 Gigabit Router", "category": "Routers", "price": 79.99, "image": "/products/routers/r18.jpg", "inStock": true },
+  { "id": "rt-19", "name": "ASUS ROG Rapture GT-AX11000", "category": "Routers", "price": 549.99, "image": "/products/routers/r19.jpg", "inStock": true },
+  { "id": "rt-20", "name": "TP-Link Archer AXE75", "category": "Routers", "price": 199.99, "image": "/products/routers/r20.jpg", "inStock": true },
+  { "id": "rt-21", "name": "WiFi 6 Dual-Band Router", "category": "Routers", "price": 64.99, "image": "/products/routers/r21.jpg", "inStock": false }
 ]
 
