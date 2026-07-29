@@ -1,22 +1,39 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="GearHub">
-  <defs>
-    <linearGradient id="gh" x1="14" y1="8" x2="52" y2="58" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#F7B08A"/>
-      <stop offset=".55" stop-color="#E58A62"/>
-      <stop offset="1" stop-color="#D2694A"/>
-    </linearGradient>
-  </defs>
-  <path fill="url(#gh)" fill-rule="evenodd" d="
-    M60 32
-    Q48.4 41.5 46 56.2
-    Q32 51 18 56.2
-    Q15.6 41.5 4 32
-    Q15.6 22.5 18 7.8
-    Q32 13 46 7.8
-    Q48.4 22.5 60 32
-    Z
-    M32 22.6
-    a9.4 9.4 0 1 0 0 18.8
-    a9.4 9.4 0 1 0 0-18.8
-    Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="GearHub">
+  <!--
+    Two-tone mark: the gear ring and its teeth in orange, the hub and dash in
+    brand black (#111827). Colours are set literally rather than as currentColor,
+    because this file loads through an img tag where currentColor has nothing to
+    inherit and would fall back to black.
+
+    The ring is a stroked arc, not a filled outline. An arc's two flags decide
+    which of four possible curves gets drawn, and choosing wrong fills the ring
+    solid; a stroke avoids the problem. The ring radius is kept small so the
+    teeth have room to run well past it. Teeth are one rect rotated into place,
+    so none can straddle the cut on the right.
+  -->
+  <g fill="#D97757">
+    <path
+      d="M 17.52 16.63 A 7.2 7.2 0 1 1 17.52 7.37"
+      fill="none"
+      stroke="#D97757"
+      stroke-width="3"
+      stroke-linecap="round"
+    />
+
+    <rect x="18.8" y="9.9" width="4.6" height="4.2" rx="1.1" transform="rotate(68 12 12)" />
+    <rect x="18.8" y="9.9" width="4.6" height="4.2" rx="1.1" transform="rotate(124 12 12)" />
+    <rect x="18.8" y="9.9" width="4.6" height="4.2" rx="1.1" transform="rotate(180 12 12)" />
+    <rect x="18.8" y="9.9" width="4.6" height="4.2" rx="1.1" transform="rotate(236 12 12)" />
+    <rect x="18.8" y="9.9" width="4.6" height="4.2" rx="1.1" transform="rotate(292 12 12)" />
+  </g>
+
+  <!-- Hub and dash, in brand black. -->
+  <circle cx="12" cy="12" r="2.7" fill="#111827" />
+  <path
+    d="M 15.7 12 H 22.3"
+    fill="none"
+    stroke="#111827"
+    stroke-width="2.4"
+    stroke-linecap="round"
+  />
 </svg>
