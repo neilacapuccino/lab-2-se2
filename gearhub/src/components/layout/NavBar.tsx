@@ -1,4 +1,4 @@
-import { ChevronDown, Search, ShoppingCart } from '../icons';
+import { ChevronDown, Search, ShoppingCart, Sliders } from '../icons';
 import { CATEGORIES } from '../../types';
 
 interface NavBarProps {
@@ -9,6 +9,8 @@ interface NavBarProps {
   /** Total item count, summing quantities rather than distinct lines. */
   cartCount: number;
   onCartClick: () => void;
+  isFilterOpen: boolean;
+  onFilterClick: () => void;
 }
 
 /**
@@ -28,6 +30,8 @@ export default function NavBar({
   onCategoryChange,
   cartCount,
   onCartClick,
+  isFilterOpen,
+  onFilterClick,
 }: NavBarProps) {
   return (
     <header className="sticky top-0 z-30 h-[72px] border-b border-[#E2E8F0] bg-white">
@@ -44,6 +48,21 @@ export default function NavBar({
         </a>
 
         <div className="flex flex-1 items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={onFilterClick}
+            aria-pressed={isFilterOpen}
+            aria-label="Toggle filters"
+            className={`flex h-[37px] shrink-0 cursor-pointer items-center gap-2 rounded-lg border px-3 text-[13px] font-medium transition-colors ${
+              isFilterOpen
+                ? 'border-[#2563EB] bg-[#EFF6FF] text-[#2563EB]'
+                : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#475569] hover:border-[#CBD5E1]'
+            }`}
+          >
+            <Sliders className="size-4" />
+            <span className="max-[640px]:hidden">Filters</span>
+          </button>
+
           <label className="relative block w-full max-w-[320px]">
             <span className="sr-only">Search products</span>
             <Search
