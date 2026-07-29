@@ -4,7 +4,7 @@ import NavBar from "./components/layout/NavBar";
 import DashboardPage from "./pages/dashboardPage";
 import { products } from "./data/products";
 import { MAX_PRICE } from "./types";
-import type { CartItem, Filters, Product } from "./types";
+import type { CartItem, Filters, Product, SortBy } from "./types";
 import { countByCategory } from "./utils/productUtils";
 import { WIDE_LAYOUT, useMediaQuery } from "./utils/useMediaQuery";
 
@@ -49,7 +49,7 @@ function App() {
     setFilters((current) => ({ ...current, category }));
 
   // SET_SORT
-  const setSort = (sortBy: Filters["sortBy"]) =>
+  const setSort = (sortBy: SortBy) =>
     setFilters((current) => ({ ...current, sortBy }));
 
   // ADD_TO_CART — increments when the product is already a line item.

@@ -3,7 +3,7 @@ import CartDrawer from '../components/CartDrawer';
 import FeaturedSection from '../components/FeaturedSection';
 import FilterSidebar from '../components/FilterSidebar';
 import ProductGrid from '../components/ProductGrid';
-import type { CartItem, Filters, Product } from '../types';
+import type { CartItem, Filters, Product, SortBy } from '../types';
 import { countByCategory, hasQuery, visibleProducts } from '../utils/productUtils';
 import { WIDE_LAYOUT, useMediaQuery } from '../utils/useMediaQuery';
 
@@ -14,7 +14,7 @@ interface DashboardPageProps {
   isFilterOpen: boolean;
   isCartOpen: boolean;
   onCategoryChange: (category: string) => void;
-  onSortChange: (sortBy: Filters['sortBy']) => void;
+  onSortChange: (sortBy: SortBy) => void;
   onClearSearch: () => void;
   onAddToCart: (product: Product) => void;
   onIncrement: (id: string) => void;

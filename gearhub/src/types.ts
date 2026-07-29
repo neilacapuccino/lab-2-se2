@@ -16,7 +16,14 @@ export interface CartItem extends Product {
  * but the feature list also asks to "sort products by price (low-to-high,
  * high-to-low) or title". 'title' is included here so both can be satisfied.
  */
-export type SortBy = 'default' | 'price-asc' | 'price-desc' | 'title';
+export type SortBy =
+  | 'default'
+  | 'price-asc'
+  | 'price-desc'
+  | 'title'
+  | 'title-desc'
+  | 'stock';
+
 
 export interface Filters {
   searchQuery: string;
