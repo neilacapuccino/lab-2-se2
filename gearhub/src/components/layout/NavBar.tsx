@@ -11,6 +11,8 @@ interface NavBarProps {
   onCartClick: () => void;
   isFilterOpen: boolean;
   onFilterClick: () => void;
+  /** Clears the filters and closes the cart, returning to the featured view. */
+  onHomeClick: () => void;
 }
 
 /**
@@ -32,20 +34,22 @@ export default function NavBar({
   onCartClick,
   isFilterOpen,
   onFilterClick,
+  onHomeClick,
 }: NavBarProps) {
   return (
     <header className="sticky top-0 z-30 h-[72px] border-b border-[#E2E8F0] bg-white">
       <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-6 px-10">
-        <a
-          href="/"
-          aria-label="GearHub home"
-          className="flex shrink-0 items-center gap-2 rounded-lg focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 focus-visible:outline-none"
+        <button
+          type="button"
+          onClick={onHomeClick}
+          aria-label="GearHub home — clear filters and cart view"
+          className="flex shrink-0 cursor-pointer items-center gap-2 rounded-lg focus-visible:ring-2 focus-visible:ring-[#2563EB] focus-visible:ring-offset-2 focus-visible:outline-none"
         >
           <img src="/logo.svg" alt="" width={32} height={32} className="block size-8" />
           <span className="text-[18px] leading-none font-extrabold tracking-tight text-[#0F172A]">
             GearHub
           </span>
-        </a>
+        </button>
 
         <div className="flex flex-1 items-center justify-center gap-3">
           <button

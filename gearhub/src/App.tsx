@@ -95,6 +95,13 @@ function App() {
       sortBy: "default",
     }));
 
+  // Clicking the wordmark clears the filters and closes the cart, which brings
+  // the featured view back.
+  const goHome = () => {
+    resetFilters();
+    setIsCartOpen(false);
+  };
+
   // The simulated checkout. Part 6 adds the confirmation view.
   const checkout = () => {
     clearCart();
@@ -114,6 +121,7 @@ function App() {
         onCartClick={() => openCart(!isCartOpen)}
         isFilterOpen={isFilterOpen}
         onFilterClick={() => openFilter(!isFilterOpen)}
+        onHomeClick={goHome}
       />
 
       <Routes>
@@ -138,6 +146,7 @@ function App() {
               onCheckout={checkout}
               onCloseFilter={() => openFilter(false)}
               onCloseCart={() => openCart(false)}
+              onOpenFilter={() => openFilter(true)}
             />
           }
         />
