@@ -202,6 +202,17 @@ export function Webcam(props: IconProps) {
   );
 }
 
+export function Router(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <rect x="2" y="14" width="20" height="7" rx="2" />
+      <path d="M6.5 17.5h.01M10 17.5h.01" />
+      <path d="m7 14 1.5-4M17 14 15.5 10" />
+      <path d="M9 6a4.5 4.5 0 0 1 6 0" />
+    </Icon>
+  );
+}
+
 export function Phone(props: IconProps) {
   return (
     <Icon {...props}>

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import type { ComponentType, SVGProps } from 'react';
 import ProductCard from './ProductCard';
 import {
@@ -6,10 +7,12 @@ import {
   Keyboard,
   Microphone,
   Mouse,
+  Router,
   Speaker,
   Webcam,
 } from './icons';
 import type { Product } from '../types';
+import { pickFeatured } from '../utils/productUtils';
 
 interface FeaturedSectionProps {
   products: Product[];
@@ -27,6 +30,7 @@ const CATEGORY_ICONS: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
   Mice: Mouse,
   Microphones: Microphone,
   Webcams: Webcam,
+  Routers: Router,
 };
 
 /**
@@ -42,7 +46,15 @@ export default function FeaturedSection({
   onOpenFilters,
 }: FeaturedSectionProps) {
   const categories = Object.keys(CATEGORY_ICONS);
-  const featured = products.filter((product) => product.inStock).slice(0, 8);
+
+  /**
+   * Eight categories and eight products both divide by four and by two, so the
+   * last row of each grid fills at every column count the capped width reaches.
+   *
+   * useMemo with an empty dependency list keeps the random pick stable for the
+   * life of the page — without it the row would reshuffle on every keystroke.
+   */
+  const featured = useMemo(() => pickFeatured(products, 8), []);
 
   return (
     <div className="mx-auto flex max-w-[1200px] flex-col gap-10 px-8 py-8">
@@ -85,7 +97,7 @@ export default function FeaturedSection({
           Featured Categories
         </h2>
 
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(190px,1fr))] gap-4">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(260px,1fr))] gap-4">
           {categories.map((category) => {
             const Icon = CATEGORY_ICONS[category];
             const count = products.filter((p) => p.category === category).length;
@@ -119,7 +131,7 @@ export default function FeaturedSection({
           Featured Products
         </h2>
 
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-5">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-5">
           {featured.map((product) => (
             <ProductCard key={product.id} product={product} onAddToCart={onAddToCart} />
           ))}
