@@ -1,5 +1,5 @@
-import { ChevronDown, Search, ShoppingCart, Sliders } from '../icons';
-import { CATEGORIES } from '../../types';
+import CategoryMenu from '../CategoryMenu';
+import { Funnel, Search, ShoppingCart } from '../icons';
 
 interface NavBarProps {
   searchQuery: string;
@@ -13,6 +13,9 @@ interface NavBarProps {
   onFilterClick: () => void;
   /** Clears the filters and closes the cart, returning to the featured view. */
   onHomeClick: () => void;
+  /** Per-category totals, shown beside each option in the category menu. */
+  categoryCounts: Record<string, number>;
+  totalProducts: number;
 }
 
 /**
@@ -35,6 +38,8 @@ export default function NavBar({
   isFilterOpen,
   onFilterClick,
   onHomeClick,
+  categoryCounts,
+  totalProducts,
 }: NavBarProps) {
   return (
     <header className="sticky top-0 z-30 h-[72px] border-b border-[#E2E8F0] bg-white">
@@ -51,56 +56,48 @@ export default function NavBar({
           </span>
         </button>
 
-        <div className="flex flex-1 items-center justify-center gap-3">
-          <button
-            type="button"
-            onClick={onFilterClick}
-            aria-pressed={isFilterOpen}
-            aria-label="Toggle filters"
-            className={`flex h-[37px] shrink-0 cursor-pointer items-center gap-2 rounded-lg border px-3 text-[13px] font-medium transition-colors ${
-              isFilterOpen
-                ? 'border-[#2563EB] bg-[#EFF6FF] text-[#2563EB]'
-                : 'border-[#E2E8F0] bg-[#F8FAFC] text-[#475569] hover:border-[#CBD5E1]'
-            }`}
-          >
-            <Sliders className="size-4" />
-            <span className="max-[640px]:hidden">Filters</span>
-          </button>
-
-          <label className="relative block w-full max-w-[320px]">
-            <span className="sr-only">Search products</span>
-            <Search
-              aria-hidden="true"
-              strokeWidth={2}
-              className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-[#94A3B8]"
+        <div className="flex flex-1 justify-center">
+          {/* One unit: a single outer border, no internal dividers. The category
+              end is set apart by a darker fill rather than a line. */}
+          {/* No overflow-hidden here: it would clip the category dropdown.
+              The end segments round their own outer corners instead. */}
+          <div className="flex h-[37px] w-full max-w-[520px] items-stretch rounded-lg border border-[#E2E8F0] bg-white transition-colors focus-within:border-[#2563EB]">
+            <CategoryMenu
+              category={category}
+              counts={categoryCounts}
+              total={totalProducts}
+              onCategoryChange={onCategoryChange}
             />
-            <input
-              type="search"
-              value={searchQuery}
-              onChange={(event) => onSearchChange(event.target.value)}
-              placeholder="Search premium tech gear..."
-              className="h-[37px] w-full rounded-lg border border-[#E2E8F0] pr-3 pl-10 text-[14px] text-[#0F172A] transition-colors placeholder:text-[#94A3B8] hover:border-[#CBD5E1] focus:border-[#2563EB] focus:outline-none"
-            />
-          </label>
 
-          <div className="relative w-[148px] shrink-0">
-            <select
-              value={category}
-              onChange={(event) => onCategoryChange(event.target.value)}
-              aria-label="Filter by category"
-              className="h-[37px] w-full cursor-pointer appearance-none rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] pr-8 pl-4 text-[14px] font-medium text-[#475569] transition-colors hover:border-[#CBD5E1] focus:border-[#2563EB] focus:outline-none"
+            <label className="relative flex min-w-0 flex-1 items-center">
+              <span className="sr-only">Search products</span>
+              <Search
+                aria-hidden="true"
+                strokeWidth={2}
+                className="pointer-events-none absolute left-3 size-4 text-[#94A3B8]"
+              />
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(event) => onSearchChange(event.target.value)}
+                placeholder="Search premium tech gear..."
+                className="h-full w-full bg-transparent pr-3 pl-9 text-[14px] text-[#0F172A] placeholder:text-[#94A3B8] focus:outline-none"
+              />
+            </label>
+
+            <button
+              type="button"
+              onClick={onFilterClick}
+              aria-pressed={isFilterOpen}
+              aria-label="Toggle filters"
+              className={`flex w-[44px] shrink-0 cursor-pointer items-center justify-center rounded-r-[7px] transition-colors ${
+                isFilterOpen
+                  ? 'text-[#2563EB]'
+                  : 'text-[#94A3B8] hover:text-[#475569]'
+              }`}
             >
-              {CATEGORIES.map((option) => (
-                <option key={option} value={option}>
-                  {option === 'All' ? 'All Categories' : option}
-                </option>
-              ))}
-            </select>
-            <ChevronDown
-              aria-hidden="true"
-              strokeWidth={2}
-              className="pointer-events-none absolute top-1/2 right-3 size-3.5 -translate-y-1/2 text-[#475569]"
-            />
+              <Funnel className="size-4" />
+            </button>
           </div>
         </div>
 

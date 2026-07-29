@@ -86,6 +86,32 @@ export function Trash(props: IconProps) {
   );
 }
 
+export function Check(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m5 13 4 4 10-10" />
+    </Icon>
+  );
+}
+
+/** Three stacked lines — the category / list control. */
+export function Menu(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </Icon>
+  );
+}
+
+/** Funnel — the usual "filter" mark. */
+export function Funnel(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M3 5h18l-7 8v6l-4 2v-8z" />
+    </Icon>
+  );
+}
+
 export function Sliders(props: IconProps) {
   return (
     <Icon {...props}>

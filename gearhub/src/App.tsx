@@ -5,6 +5,7 @@ import DashboardPage from "./pages/dashboardPage";
 import { products } from "./data/products";
 import { MAX_PRICE } from "./types";
 import type { CartItem, Filters, Product } from "./types";
+import { countByCategory } from "./utils/productUtils";
 import { WIDE_LAYOUT, useMediaQuery } from "./utils/useMediaQuery";
 
 /**
@@ -109,6 +110,7 @@ function App() {
   };
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const categoryCounts = countByCategory(products);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
@@ -122,6 +124,8 @@ function App() {
         isFilterOpen={isFilterOpen}
         onFilterClick={() => openFilter(!isFilterOpen)}
         onHomeClick={goHome}
+        categoryCounts={categoryCounts}
+        totalProducts={products.length}
       />
 
       <Routes>
