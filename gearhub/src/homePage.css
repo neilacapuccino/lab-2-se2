@@ -2,15 +2,20 @@
    Global
 =========================== */
 
-* {
+/*
+ * Scoped to .homepage on purpose. As a bare `*` selector this reset sat
+ * outside any cascade layer, and unlayered rules outrank anything inside
+ * `@layer` no matter the specificity — so it beat Tailwind's utilities and
+ * stripped the padding off the nav bar and its search field.
+ */
+.homepage,
+.homepage * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
 body {
-    font-family: "Inter", Arial, Helvetica, sans-serif;
-    background: #f6f8fc;
     color: #1f2937;
 }
 

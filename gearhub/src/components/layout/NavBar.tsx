@@ -28,9 +28,12 @@ export default function NavBar({
   return (
     <header className="sticky top-0 z-30 h-[72px] border-b border-[#E2E8F0] bg-white">
       <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between gap-6 px-10">
-        <span className="text-[18px] font-extrabold tracking-tight text-[#0F172A]">
-          GearHub
-        </span>
+        <a href="/" className="flex shrink-0 items-center gap-2" aria-label="GearHub home">
+          <img src="/logo.svg" alt="" width={32} height={32} className="block size-8" />
+          <span className="text-[18px] leading-none font-extrabold tracking-tight text-[#0F172A]">
+            GearHub
+          </span>
+        </a>
 
         <div className="flex flex-1 items-center justify-center gap-3">
           <label className="relative block w-full max-w-[320px]">
