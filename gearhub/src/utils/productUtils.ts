@@ -23,19 +23,30 @@ export function countByCategory(products: Product[]): Record<string, number> {
 const matchesSearch = (query: string) => (product: Product) =>
   product.name.toLowerCase().includes(query.trim().toLowerCase());
 
-// matchesCategory :: String -> Product -> Boolean
-const matchesCategory = (category: string) => (product: Product) =>
-  category === 'All' || product.category === category;
+/**
+ * An empty selection means nothing has been picked yet — the landing view. The
+ * literal 'All' entry is a deliberate choice that keeps every product, and any
+ * other entries keep only those categories.
+ */
+// matchesCategories :: [String] -> Product -> Boolean
+const matchesCategories = (categories: string[]) => (product: Product) =>
+  categories.length === 0 ||
+  categories.includes('All') ||
+  categories.includes(product.category);
 
 // withinBudget :: Number -> Product -> Boolean
 const withinBudget = (maxPrice: number) => (product: Product) =>
   product.price <= maxPrice;
 
-// filterProducts :: Filters -> [Product] -> [Product]
-export function filterProducts(filters: Filters, products: Product[]): Product[] {
+// filterProducts :: Filters -> [String] -> [Product] -> [Product]
+export function filterProducts(
+  filters: Filters,
+  categories: string[],
+  products: Product[],
+): Product[] {
   return products
     .filter(matchesSearch(filters.searchQuery))
-    .filter(matchesCategory(filters.category))
+    .filter(matchesCategories(categories))
     .filter(withinBudget(filters.maxPrice));
 }
 
@@ -66,17 +77,21 @@ export function sortProducts(sortBy: Filters['sortBy'], products: Product[]): Pr
 
 /**
  * The grid stays empty until the shopper narrows things down — either by
- * choosing a category or by typing a search term.
+ * picking at least one category or by typing a search term.
  */
-// hasQuery :: Filters -> Boolean
-export function hasQuery(filters: Filters): boolean {
-  return filters.category !== 'All' || filters.searchQuery.trim().length > 0;
+// hasQuery :: Filters -> [String] -> Boolean
+export function hasQuery(filters: Filters, categories: string[]): boolean {
+  return categories.length > 0 || filters.searchQuery.trim().length > 0;
 }
 
-// visibleProducts :: Filters -> [Product] -> [Product]
-export function visibleProducts(filters: Filters, products: Product[]): Product[] {
-  if (!hasQuery(filters)) return [];
-  return sortProducts(filters.sortBy, filterProducts(filters, products));
+// visibleProducts :: Filters -> [String] -> [Product] -> [Product]
+export function visibleProducts(
+  filters: Filters,
+  categories: string[],
+  products: Product[],
+): Product[] {
+  if (!hasQuery(filters, categories)) return [];
+  return sortProducts(filters.sortBy, filterProducts(filters, categories, products));
 }
 
 // formatPrice :: Number -> String

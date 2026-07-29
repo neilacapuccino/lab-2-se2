@@ -21,6 +21,13 @@ function App() {
     sortBy: "default",
   });
   const [cart, setCart] = useState<CartItem[]>([]);
+  /**
+   * The sidebar allows several categories at once, which a single string cannot
+   * express — so the multi-selection lives here and `filters.category` is kept
+   * in step for the nav dropdown, leaving the specified Filters shape intact.
+   * Empty means no category filter.
+   */
+  const [selected, setSelected] = useState<string[]>([]);
   // Both panels start closed on every load, so the featured view gets the full
   // width and nothing is open that the visitor did not open themselves.
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -44,9 +51,41 @@ function App() {
   const setSearchQuery = (searchQuery: string) =>
     setFilters((current) => ({ ...current, searchQuery }));
 
-  // SET_CATEGORY
-  const setCategory = (category: string) =>
-    setFilters((current) => ({ ...current, category }));
+  // Mirrors the multi-selection into the single-value field the spec defines:
+  // one named pick shows that category, anything else falls back to "All".
+  const syncCategoryField = (next: string[]) =>
+    setFilters((current) => ({
+      ...current,
+      category: next.length === 1 ? next[0] : "All",
+    }));
+
+  // SET_CATEGORY — from the nav dropdown, which is single-choice.
+  const setCategory = (category: string) => {
+    const next = [category];
+    setSelected(next);
+    syncCategoryField(next);
+  };
+
+  /**
+   * Sidebar rows toggle in and out. "All" is exclusive: picking it drops the
+   * named categories, and picking a named category drops "All".
+   */
+  const toggleCategory = (category: string) =>
+    setSelected((current) => {
+      const has = current.includes(category);
+      const next =
+        category === "All"
+          ? has
+            ? []
+            : ["All"]
+          : has
+            ? current.filter((entry) => entry !== category)
+            : [...current.filter((entry) => entry !== "All"), category];
+
+      syncCategoryField(next);
+      return next;
+    });
+
 
   // SET_SORT
   const setSort = (sortBy: SortBy) =>
@@ -90,13 +129,15 @@ function App() {
   const clearCart = () => setCart([]);
 
   // Returns all three filter actions to their defaults in one step.
-  const resetFilters = () =>
+  const resetFilters = () => {
+    setSelected([]);
     setFilters((current) => ({
       ...current,
       searchQuery: "",
       category: "All",
       sortBy: "default",
     }));
+  };
 
   // Clicking the logo returns the page to how it looks on a fresh load: filters
   // cleared, both panels closed, featured view showing. The cart itself is left
@@ -140,9 +181,11 @@ function App() {
               products={products}
               cart={cart}
               filters={filters}
+              selected={selected}
               isFilterOpen={isFilterOpen}
               isCartOpen={isCartOpen}
               onCategoryChange={setCategory}
+              onToggleCategory={toggleCategory}
               onSortChange={setSort}
               onClearSearch={() => setSearchQuery("")}
               onAddToCart={addToCart}
