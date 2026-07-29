@@ -5,10 +5,11 @@ import type { Filters, Product } from '../types';
 interface ProductGridProps {
   products: Product[];
   filters: Filters;
+  selected: string[];
   /** False before the shopper has chosen a category or typed a search. */
   hasQuery: boolean;
   onAddToCart: (product: Product) => void;
-  onClearCategory: () => void;
+  onToggleCategory: (category: string) => void;
   onClearSearch: () => void;
 }
 
@@ -21,13 +22,19 @@ interface ProductGridProps {
 export default function ProductGrid({
   products,
   filters,
+  selected,
   hasQuery,
   onAddToCart,
-  onClearCategory,
+  onToggleCategory,
   onClearSearch,
 }: ProductGridProps) {
-  const heading =
-    filters.category === 'All' ? 'Search Results' : `${filters.category} Search Results`;
+  const heading = selected.includes('All')
+    ? 'All Products'
+    : selected.length === 1
+      ? `${selected[0]} Search Results`
+      : selected.length > 1
+        ? `${selected.length} Categories Selected`
+        : 'Search Results';
 
   return (
     <section className="flex min-h-full flex-col px-8 py-6">
@@ -45,9 +52,13 @@ export default function ProductGrid({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {filters.category !== 'All' && (
-            <FilterChip label={filters.category} onRemove={onClearCategory} />
-          )}
+          {selected.map((category) => (
+            <FilterChip
+              key={category}
+              label={category}
+              onRemove={() => onToggleCategory(category)}
+            />
+          ))}
           {filters.searchQuery.trim() && (
             <FilterChip label={filters.searchQuery.trim()} onRemove={onClearSearch} />
           )}

@@ -11,9 +11,11 @@ interface DashboardPageProps {
   products: Product[];
   cart: CartItem[];
   filters: Filters;
+  selected: string[];
   isFilterOpen: boolean;
   isCartOpen: boolean;
   onCategoryChange: (category: string) => void;
+  onToggleCategory: (category: string) => void;
   onSortChange: (sortBy: SortBy) => void;
   onClearSearch: () => void;
   onAddToCart: (product: Product) => void;
@@ -39,9 +41,11 @@ export default function DashboardPage({
   products,
   cart,
   filters,
+  selected,
   isFilterOpen,
   isCartOpen,
   onCategoryChange,
+  onToggleCategory,
   onSortChange,
   onClearSearch,
   onAddToCart,
@@ -58,8 +62,8 @@ export default function DashboardPage({
   const isWide = useMediaQuery(WIDE_LAYOUT);
 
   const counts = countByCategory(products);
-  const visible = visibleProducts(filters, products);
-  const showingResults = hasQuery(filters);
+  const visible = visibleProducts(filters, selected, products);
+  const showingResults = hasQuery(filters, selected);
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -73,9 +77,10 @@ export default function DashboardPage({
       >
         <FilterSidebar
           filters={filters}
+          selected={selected}
           counts={counts}
           total={products.length}
-          onCategoryChange={onCategoryChange}
+          onToggleCategory={onToggleCategory}
           onSortChange={onSortChange}
           onReset={onResetFilters}
           onClose={onCloseFilter}
@@ -87,9 +92,10 @@ export default function DashboardPage({
           <ProductGrid
             products={visible}
             filters={filters}
+            selected={selected}
             hasQuery={showingResults}
             onAddToCart={onAddToCart}
-            onClearCategory={() => onCategoryChange('All')}
+            onToggleCategory={onToggleCategory}
             onClearSearch={onClearSearch}
           />
         ) : (

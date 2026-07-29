@@ -1,15 +1,17 @@
 import type { ReactNode } from 'react';
 import Dropdown from './Dropdown';
-import { X } from './icons';
+import { Check, X } from './icons';
 import { CATEGORIES, MAX_PRICE } from '../types';
 import type { Filters, SortBy } from '../types';
 import { formatPrice } from '../utils/productUtils';
 
 interface FilterSidebarProps {
   filters: Filters;
+  /** Empty means no category filter, which lights up the All row. */
+  selected: string[];
   counts: Record<string, number>;
   total: number;
-  onCategoryChange: (category: string) => void;
+  onToggleCategory: (category: string) => void;
   onSortChange: (sortBy: SortBy) => void;
   onReset: () => void;
   onClose: () => void;
@@ -35,15 +37,16 @@ const SORT_OPTIONS: { value: SortBy; label: string }[] = [
  */
 export default function FilterSidebar({
   filters,
+  selected,
   counts,
   total,
-  onCategoryChange,
+  onToggleCategory,
   onSortChange,
   onReset,
   onClose,
 }: FilterSidebarProps) {
   const isDefault =
-    filters.category === 'All' &&
+    selected.length === 0 &&
     filters.searchQuery.trim() === '' &&
     filters.sortBy === 'default';
 
@@ -63,22 +66,34 @@ export default function FilterSidebar({
 
       <ul className="flex flex-col gap-0.5">
         {CATEGORIES.map((category) => {
-          const active = filters.category === category;
-          const count = category === 'All' ? total : (counts[category] ?? 0);
+          const isAll = category === 'All';
+          // Nothing is highlighted until something is picked; All is a real
+          // choice that shows the whole catalogue, not the absence of one.
+          const active = selected.includes(category);
+          const count = isAll ? total : (counts[category] ?? 0);
 
           return (
             <li key={category}>
               <button
                 type="button"
-                onClick={() => onCategoryChange(category)}
-                aria-current={active ? 'true' : undefined}
-                className={`flex w-full cursor-pointer items-center justify-between rounded-lg px-2.5 py-2 text-[13px] transition-colors ${
+                onClick={() => onToggleCategory(category)}
+                aria-pressed={active}
+                className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-[13px] transition-colors ${
                   active
                     ? 'bg-[#EFF6FF] font-medium text-[#2563EB]'
                     : 'text-[#475569] hover:bg-[#F8FAFC]'
                 }`}
               >
-                <span className="truncate">{category}</span>
+                <span className="flex min-w-0 items-center gap-2">
+                  <span
+                    className={`flex size-4 shrink-0 items-center justify-center rounded border transition-colors ${
+                      active ? 'border-[#2563EB] bg-[#2563EB] text-white' : 'border-[#CBD5E1]'
+                    }`}
+                  >
+                    {active && <Check className="size-3" />}
+                  </span>
+                  <span className="truncate">{category}</span>
+                </span>
                 <span
                   className={`text-[11px] tabular-nums ${
                     active ? 'text-[#2563EB]' : 'text-[#CBD5E1]'
