@@ -30,7 +30,7 @@ export default function ProductGrid({
     filters.category === 'All' ? 'Search Results' : `${filters.category} Search Results`;
 
   return (
-    <section className="flex h-full flex-col overflow-y-auto px-8 py-6">
+    <section className="flex min-h-full flex-col px-8 py-6">
       <header className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-[20px] font-bold text-[#0F172A]">{heading}</h1>
@@ -62,17 +62,10 @@ export default function ProductGrid({
         </div>
       )}
 
-      {hasQuery && products.length === 0 && (
+      {products.length === 0 && (
         <EmptyState
           title="No products found"
           body="Try a different search term, or pick another category."
-        />
-      )}
-
-      {!hasQuery && (
-        <EmptyState
-          title="Nothing to show yet"
-          body="Pick a category from the filters, or search for something specific."
         />
       )}
     </section>

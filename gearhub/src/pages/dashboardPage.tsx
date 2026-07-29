@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import CartDrawer from '../components/CartDrawer';
+import FeaturedSection from '../components/FeaturedSection';
 import FilterSidebar from '../components/FilterSidebar';
 import ProductGrid from '../components/ProductGrid';
 import type { CartItem, Filters, Product } from '../types';
@@ -24,6 +25,7 @@ interface DashboardPageProps {
   onCheckout: () => void;
   onCloseFilter: () => void;
   onCloseCart: () => void;
+  onOpenFilter: () => void;
 }
 
 /**
@@ -51,6 +53,7 @@ export default function DashboardPage({
   onCheckout,
   onCloseFilter,
   onCloseCart,
+  onOpenFilter,
 }: DashboardPageProps) {
   const isWide = useMediaQuery(WIDE_LAYOUT);
 
@@ -79,15 +82,24 @@ export default function DashboardPage({
         />
       </Panel>
 
-      <main className="min-w-0 flex-1">
-        <ProductGrid
-          products={visible}
-          filters={filters}
-          hasQuery={showingResults}
-          onAddToCart={onAddToCart}
-          onClearCategory={() => onCategoryChange('All')}
-          onClearSearch={onClearSearch}
-        />
+      <main className="min-w-0 flex-1 overflow-y-auto">
+        {showingResults ? (
+          <ProductGrid
+            products={visible}
+            filters={filters}
+            hasQuery={showingResults}
+            onAddToCart={onAddToCart}
+            onClearCategory={() => onCategoryChange('All')}
+            onClearSearch={onClearSearch}
+          />
+        ) : (
+          <FeaturedSection
+            products={products}
+            onCategoryChange={onCategoryChange}
+            onAddToCart={onAddToCart}
+            onOpenFilters={onOpenFilter}
+          />
+        )}
       </main>
 
       <Panel open={isCartOpen} floating={!isWide} side="right" onDismiss={onCloseCart}>
