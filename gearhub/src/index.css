@@ -9,3 +9,43 @@
 body {
   font-family: var(--font-sans);
 }
+
+/*
+ * Slim, unobtrusive scrollbars. Kept in `@layer base` so ordinary utilities can
+ * still override anything here — unlayered rules would outrank them.
+ */
+@layer base {
+  /*
+   * Firefox only. Chromium ignores ::-webkit-scrollbar as soon as
+   * scrollbar-width is set, so this is fenced off to keep the custom
+   * 6px thumb below for browsers that support it.
+   */
+  @supports (-moz-appearance: none) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 transparent;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    background: #e2e8f0;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
