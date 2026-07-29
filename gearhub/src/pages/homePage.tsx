@@ -10,6 +10,7 @@ import phoneCase from "../assets/products/phoneCase.jpg";
 import cable from "../assets/products/cable.jpg";
 import keyboard from "../assets/products/kb-03.jpg";
 import mouse from "../assets/products/ms-02.jpg";
+import FeaturedCategories from "../components/featuredCategories";
 
 interface Product {
   id: number;
@@ -80,7 +81,6 @@ export default function HomePage({
     },
   ];
 
-  // Filter products
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name
       .toLowerCase()
@@ -102,7 +102,9 @@ export default function HomePage({
             New Arrivals Stocked Daily
           </span>
 
-          <h1>Discover Premium Tech Gear</h1>
+          <h1>
+            Discover Premium Tech Gear
+          </h1>
 
           <p>
             Shop the latest hand-picked, premium-grade accessories
@@ -123,7 +125,11 @@ export default function HomePage({
         </div>
       </section>
 
-      {/* ================= PRODUCTS ================= */}
+      {/* ================= FEATURED CATEGORIES ================= */}
+
+      <FeaturedCategories />
+
+      {/* ================= FEATURED PRODUCTS ================= */}
 
       <section className="products">
         <div className="section-header">
@@ -182,6 +188,7 @@ export default function HomePage({
           ) : (
             <div className="no-products">
               <h3>No products found.</h3>
+
               <p>
                 Try another search or choose a different
                 category.
