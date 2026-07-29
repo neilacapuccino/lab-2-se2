@@ -21,7 +21,9 @@ function App() {
     sortBy: "default",
   });
   const [cart, setCart] = useState<CartItem[]>([]);
-  const [isFilterOpen, setIsFilterOpen] = useState(true);
+  // Both panels start closed on every load, so the featured view gets the full
+  // width and nothing is open that the visitor did not open themselves.
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const isWide = useMediaQuery(WIDE_LAYOUT);
@@ -96,10 +98,12 @@ function App() {
       sortBy: "default",
     }));
 
-  // Clicking the wordmark clears the filters and closes the cart, which brings
-  // the featured view back.
+  // Clicking the logo returns the page to how it looks on a fresh load: filters
+  // cleared, both panels closed, featured view showing. The cart itself is left
+  // alone — losing what you had added would be a nasty surprise.
   const goHome = () => {
     resetFilters();
+    setIsFilterOpen(false);
     setIsCartOpen(false);
   };
 
