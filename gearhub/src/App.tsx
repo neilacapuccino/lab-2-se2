@@ -1,13 +1,11 @@
-import { useState } from 'react';
-import NavBar from './components/layout/NavBar';
+import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
+import NavBar from "./components/layout/NavBar";
+import HomePage from "./pages/homePage";
 
-/**
- * Local state is temporary scaffolding so the nav bar is interactive before
- * the reducer exists. The dashboard body below fills in next.
- */
 function App() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [category, setCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [category, setCategory] = useState("All");
 
   return (
     <div className="min-h-screen bg-white">
@@ -20,7 +18,9 @@ function App() {
         onCartClick={() => {}}
       />
 
-      <main className="mx-auto max-w-[1440px]" />
+      <Routes>
+        <Route path="/" element={<HomePage searchQuery={searchQuery} category={category} /> } />
+      </Routes>
     </div>
   );
 }
