@@ -81,3 +81,42 @@ export function visibleProducts(filters: Filters, products: Product[]): Product[
 
 // formatPrice :: Number -> String
 export const formatPrice = (value: number): string => `$${value.toFixed(2)}`;
+
+/**
+ * Picks a varied handful of products for the landing page.
+ *
+ * One product is taken from each category before any category is used twice, so
+ * the row is a cross-section of the shop rather than the first N rows of the
+ * catalogue — which would be all headphones.
+ *
+ * Note: this reads Math.random, so it is not pure. Call it once behind useMemo
+ * rather than during render, or the selection reshuffles on every state change.
+ */
+// pickFeatured :: [Product] -> Number -> [Product]
+export function pickFeatured(products: Product[], count: number): Product[] {
+  const shuffle = <T,>(items: T[]): T[] =>
+    items
+      .map((item) => ({ item, order: Math.random() }))
+      .sort((a, b) => a.order - b.order)
+      .map(({ item }) => item);
+
+  const available = shuffle(products.filter((product) => product.inStock));
+
+  const byCategory = available.reduce<Record<string, Product[]>>(
+    (groups, product) => ({
+      ...groups,
+      [product.category]: [...(groups[product.category] ?? []), product],
+    }),
+    {},
+  );
+
+  // One pass taking the first of each category, then whatever is left over.
+  const firstOfEach = shuffle(
+    Object.values(byCategory)
+      .map((group) => group[0])
+      .filter(Boolean),
+  );
+  const remainder = available.filter((product) => !firstOfEach.includes(product));
+
+  return [...firstOfEach, ...remainder].slice(0, count);
+}

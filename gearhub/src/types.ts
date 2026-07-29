@@ -48,6 +48,7 @@ export const CATEGORIES = [
   'Mice',
   'Microphones',
   'Webcams',
+  'Routers',
 ] as const;
 
 /**
