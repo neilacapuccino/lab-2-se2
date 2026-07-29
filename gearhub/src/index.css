@@ -46,3 +46,16 @@
     }
   }
 }
+
+@layer utilities {
+  /* Scrolls, but shows no scrollbar — for the side panels, where a visible
+     track competes with the content in a narrow column. */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}

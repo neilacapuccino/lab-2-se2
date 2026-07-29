@@ -51,10 +51,18 @@ export function sortProducts(sortBy: Filters['sortBy'], products: Product[]): Pr
       return copy.sort((a, b) => b.price - a.price);
     case 'title':
       return copy.sort((a, b) => a.name.localeCompare(b.name));
+    case 'title-desc':
+      return copy.sort((a, b) => b.name.localeCompare(a.name));
+    case 'stock':
+      // In-stock first, then alphabetical within each group.
+      return copy.sort(
+        (a, b) => Number(b.inStock) - Number(a.inStock) || a.name.localeCompare(b.name),
+      );
     default:
       return copy;
   }
 }
+
 
 /**
  * The grid stays empty until the shopper narrows things down — either by
