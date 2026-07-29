@@ -1,0 +1,22 @@
+# Dependencies belong to the app that uses them (see gearhub/) and are never
+# committed. Running `npm install` from this directory instead of gearhub/
+# creates a node_modules here too — that is how ~316k lines of lucide-react
+# once ended up in the history.
+node_modules/
+package-lock.json
+
+# Build output
+dist/
+build/
+
+# Logs and local environment
+*.log
+npm-debug.log*
+.env
+.env.local
+
+# Editor and OS noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
