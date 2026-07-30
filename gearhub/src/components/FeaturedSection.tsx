@@ -11,13 +11,16 @@ import {
   Speaker,
   Webcam,
 } from './icons';
-import type { Product } from '../types';
+import type { CartItem, Product } from '../types';
 import { pickFeatured } from '../utils/productUtils';
 
 interface FeaturedSectionProps {
   products: Product[];
+  cart: CartItem[];
+  wishlist: string[];
   onCategoryChange: (category: string) => void;
   onAddToCart: (product: Product) => void;
+  onToggleWishlist: (id: string) => void;
   onOpenFilters: () => void;
 }
 
@@ -41,8 +44,11 @@ const CATEGORY_ICONS: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
  */
 export default function FeaturedSection({
   products,
+  cart,
+  wishlist,
   onCategoryChange,
   onAddToCart,
+  onToggleWishlist,
   onOpenFilters,
 }: FeaturedSectionProps) {
   const categories = Object.keys(CATEGORY_ICONS);
@@ -133,7 +139,14 @@ export default function FeaturedSection({
 
         <div className="grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-5">
           {featured.map((product) => (
-            <ProductCard key={product.id} product={product} onAddToCart={onAddToCart} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              cart={cart}
+              wishlisted={wishlist.includes(product.id)}
+              onAddToCart={onAddToCart}
+              onToggleWishlist={onToggleWishlist}
+            />
           ))}
         </div>
       </section>

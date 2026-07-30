@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import NavBar from "./components/layout/NavBar";
 import DashboardPage from "./pages/dashboardPage";
 import { products } from "./data/products";
 import { MAX_PRICE } from "./types";
-import type { CartItem, Filters, Product, SortBy } from "./types";
+import type { CartItem, Filters, Product, SortBy, ViewFlags } from "./types";
+import { isSoldOut } from "./utils/productUtils";
 import { countByCategory } from "./utils/productUtils";
 import { WIDE_LAYOUT, useMediaQuery } from "./utils/useMediaQuery";
 
@@ -28,6 +29,13 @@ function App() {
    * Empty means no category filter.
    */
   const [selected, setSelected] = useState<string[]>([]);
+  const [wishlist, setWishlist] = useState<string[]>([]);
+  const [views, setViews] = useState<ViewFlags>({
+    wishlistOnly: false,
+    soldOnly: false,
+  });
+  /** Transient message shown when an add is refused for want of stock. */
+  const [notice, setNotice] = useState<string | null>(null);
   // Both panels start closed on every load, so the featured view gets the full
   // width and nothing is open that the visitor did not open themselves.
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -91,17 +99,39 @@ function App() {
   const setSort = (sortBy: SortBy) =>
     setFilters((current) => ({ ...current, sortBy }));
 
-  // ADD_TO_CART — increments when the product is already a line item.
+  /**
+   * ADD_TO_CART — increments when already a line item, and refuses once the
+   * cart holds every unit that exists. The grid counts stock down as it fills;
+   * the cart keeps showing the quantity taken.
+   */
   const addToCart = (product: Product) =>
-    setCart((current) =>
-      current.some((item) => item.id === product.id)
+    setCart((current) => {
+      const existing = current.find((item) => item.id === product.id);
+      const held = existing?.quantity ?? 0;
+
+      if (held >= product.stock) {
+        setNotice(
+          product.stock === 0
+            ? `${product.name} is out of stock.`
+            : `Only ${product.stock} of ${product.name} available — all of them are already in your cart.`,
+        );
+        return current;
+      }
+
+      return existing
         ? current.map((item) =>
-            item.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item,
+            item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item,
           )
-        : [...current, { ...product, quantity: 1 }],
+        : [...current, { ...product, quantity: 1 }];
+    });
+
+  const toggleWishlist = (id: string) =>
+    setWishlist((current) =>
+      current.includes(id) ? current.filter((entry) => entry !== id) : [...current, id],
     );
+
+  const toggleView = (key: keyof ViewFlags) =>
+    setViews((current) => ({ ...current, [key]: !current[key] }));
 
   // UPDATE_QUANTITY — drops the line item once the quantity reaches zero.
   const updateQuantity = (id: string, quantity: number) =>
@@ -113,7 +143,13 @@ function App() {
 
   const increment = (id: string) => {
     const item = cart.find((entry) => entry.id === id);
-    if (item) updateQuantity(id, item.quantity + 1);
+    if (!item) return;
+    // The same ceiling applies from inside the drawer.
+    if (item.quantity >= item.stock) {
+      setNotice(`Only ${item.stock} of ${item.name} available.`);
+      return;
+    }
+    updateQuantity(id, item.quantity + 1);
   };
 
   const decrement = (id: string) => {
@@ -156,6 +192,14 @@ function App() {
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const categoryCounts = countByCategory(products);
+  const soldCount = products.filter((product) => isSoldOut(product, cart)).length;
+
+  // Clear the stock notice a few seconds after it appears.
+  useEffect(() => {
+    if (!notice) return;
+    const timer = setTimeout(() => setNotice(null), 4000);
+    return () => clearTimeout(timer);
+  }, [notice]);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
@@ -173,6 +217,15 @@ function App() {
         totalProducts={products.length}
       />
 
+      {notice && (
+        <div
+          role="status"
+          className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-[#0F172A] px-4 py-3 text-[13px] font-medium text-white shadow-[0_12px_32px_rgba(15,23,42,0.28)]"
+        >
+          {notice}
+        </div>
+      )}
+
       <Routes>
         <Route
           path="/"
@@ -182,6 +235,11 @@ function App() {
               cart={cart}
               filters={filters}
               selected={selected}
+              views={views}
+              wishlist={wishlist}
+              soldCount={soldCount}
+              onToggleWishlist={toggleWishlist}
+              onToggleView={toggleView}
               isFilterOpen={isFilterOpen}
               isCartOpen={isCartOpen}
               onCategoryChange={setCategory}

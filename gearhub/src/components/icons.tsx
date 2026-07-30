@@ -86,6 +86,15 @@ export function Trash(props: IconProps) {
   );
 }
 
+/** Pass fill="currentColor" for the filled (wishlisted) state. */
+export function Heart(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 20s-7-4.35-7-9.5A4.5 4.5 0 0 1 12 7.6a4.5 4.5 0 0 1 7 2.9c0 5.15-7 9.5-7 9.5z" />
+    </Icon>
+  );
+}
+
 export function Check(props: IconProps) {
   return (
     <Icon {...props}>

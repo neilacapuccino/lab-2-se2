@@ -111,6 +111,9 @@ export default function CartDrawer({
 
                   <p className="mt-0.5 text-[12px] text-[#94A3B8]">
                     {formatPrice(item.price)} each
+                    {item.quantity >= item.stock && (
+                      <span className="ml-1.5 text-[#B45309]">max {item.stock}</span>
+                    )}
                   </p>
 
                   <div className="mt-2.5 flex items-center justify-between">
@@ -124,9 +127,13 @@ export default function CartDrawer({
                       <span className="w-6 text-center text-[12px] font-semibold text-[#0F172A] tabular-nums">
                         {item.quantity}
                       </span>
+                      {/* Left clickable at the ceiling on purpose: pressing it
+                          explains why nothing happened, which a dead disabled
+                          button cannot do. */}
                       <Stepper
                         label={`Increase ${item.name}`}
                         onClick={() => onIncrement(item.id)}
+                        atLimit={item.quantity >= item.stock}
                       >
                         <Plus className="size-3" />
                       </Stepper>
@@ -177,10 +184,13 @@ export default function CartDrawer({
 function Stepper({
   label,
   onClick,
+  atLimit = false,
   children,
 }: {
   label: string;
   onClick: () => void;
+  /** Styled as unavailable, but still clickable so it can explain itself. */
+  atLimit?: boolean;
   children: ReactNode;
 }) {
   return (
@@ -188,7 +198,12 @@ function Stepper({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="flex size-6 cursor-pointer items-center justify-center rounded-md text-[#475569] transition-colors hover:bg-white hover:text-[#0F172A] hover:shadow-sm"
+      aria-disabled={atLimit || undefined}
+      className={`flex size-6 items-center justify-center rounded-md transition-colors ${
+        atLimit
+          ? 'cursor-not-allowed text-[#CBD5E1]'
+          : 'cursor-pointer text-[#475569] hover:bg-white hover:text-[#0F172A] hover:shadow-sm'
+      }`}
     >
       {children}
     </button>

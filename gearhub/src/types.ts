@@ -5,6 +5,12 @@ export interface Product {
   price: number;
   image: string; // url to the product's image
   inStock: boolean;
+  /**
+   * Units available. Additive to the interface the brief specifies — `inStock`
+   * is kept and stays consistent with this (`inStock === stock > 0`), so the
+   * mandated shape is intact while the cart can enforce a per-product ceiling.
+   */
+  stock: number;
 }
 
 export interface CartItem extends Product {
@@ -16,13 +22,16 @@ export interface CartItem extends Product {
  * but the feature list also asks to "sort products by price (low-to-high,
  * high-to-low) or title". 'title' is included here so both can be satisfied.
  */
-export type SortBy =
-  | 'default'
-  | 'price-asc'
-  | 'price-desc'
-  | 'title'
-  | 'title-desc'
-  | 'stock';
+export type SortBy = 'default' | 'price-asc' | 'price-desc' | 'stock';
+
+/** Extra views layered on top of the category selection. */
+export interface ViewFlags {
+  wishlistOnly: boolean;
+  soldOnly: boolean;
+}
+
+/** Everything is on sale; the struck-through "was" price is derived from this. */
+export const SALE_MULTIPLIER = 1.28;
 
 
 export interface Filters {
