@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
 /**
  * Reports whether a CSS media query currently matches, and re-renders when that
@@ -8,22 +8,30 @@ import { useEffect, useState } from 'react';
  * narrow to hold the grid alongside both panels, opening one panel has to close
  * the other. That is a state decision, so the breakpoint has to be readable from
  * the component rather than only from a stylesheet.
+ *
+ * `useSyncExternalStore` is the hook meant for exactly this — reading a value
+ * that lives outside React. Subscribing in an effect and copying the result into
+ * `useState` would work too, but it renders once with a stale value first.
  */
+// useMediaQuery :: String -> Boolean
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(
-    () => typeof window !== 'undefined' && window.matchMedia(query).matches,
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => {
+      const list = window.matchMedia(query);
+      list.addEventListener('change', onStoreChange);
+      return () => list.removeEventListener('change', onStoreChange);
+    },
+    [query],
   );
 
-  useEffect(() => {
-    const list = window.matchMedia(query);
-    const onChange = (event: MediaQueryListEvent) => setMatches(event.matches);
+  const getSnapshot = useCallback(() => window.matchMedia(query).matches, [query]);
 
-    setMatches(list.matches);
-    list.addEventListener('change', onChange);
-    return () => list.removeEventListener('change', onChange);
-  }, [query]);
+  // There is no server render here, but the third argument is required; a narrow
+  // viewport is the safer assumption, since it floats the panels rather than
+  // reserving space for them.
+  const getServerSnapshot = () => false;
 
-  return matches;
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
 /** Wide enough to show the sidebar, grid and cart side by side, as in the design. */

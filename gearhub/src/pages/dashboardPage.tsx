@@ -22,6 +22,7 @@ interface DashboardPageProps {
   onCategoryChange: (category: string) => void;
   onToggleCategory: (category: string) => void;
   onSortChange: (sortBy: SortBy) => void;
+  onMaxPriceChange: (maxPrice: number) => void;
   onClearSearch: () => void;
   onAddToCart: (product: Product) => void;
   onIncrement: (id: string) => void;
@@ -33,6 +34,7 @@ interface DashboardPageProps {
   onCloseFilter: () => void;
   onCloseCart: () => void;
   onOpenFilter: () => void;
+  receipt: CartItem[] | null;
 }
 
 /**
@@ -57,6 +59,7 @@ export default function DashboardPage({
   onCategoryChange,
   onToggleCategory,
   onSortChange,
+  onMaxPriceChange,
   onClearSearch,
   onAddToCart,
   onIncrement,
@@ -68,6 +71,7 @@ export default function DashboardPage({
   onCloseFilter,
   onCloseCart,
   onOpenFilter,
+  receipt,
 }: DashboardPageProps) {
   const isWide = useMediaQuery(WIDE_LAYOUT);
 
@@ -75,8 +79,6 @@ export default function DashboardPage({
   const ctx = { cart, wishlist, views };
   const visible = visibleProducts(filters, selected, ctx, products);
   const showingResults = hasQuery(filters, selected, views);
-
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <div className="relative flex h-[calc(100vh-72px)] overflow-hidden bg-[#F8FAFC]">
@@ -97,6 +99,7 @@ export default function DashboardPage({
           onToggleCategory={onToggleCategory}
           onToggleView={onToggleView}
           onSortChange={onSortChange}
+          onMaxPriceChange={onMaxPriceChange}
           onReset={onResetFilters}
           onClose={onCloseFilter}
         />
@@ -132,8 +135,7 @@ export default function DashboardPage({
       <Panel open={isCartOpen} floating={!isWide} side="right" onDismiss={onCloseCart}>
         <CartDrawer
           items={cart}
-          subtotal={subtotal}
-          grandTotal={subtotal}
+          receipt={receipt}
           onIncrement={onIncrement}
           onDecrement={onDecrement}
           onRemove={onRemove}

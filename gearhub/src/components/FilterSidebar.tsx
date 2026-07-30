@@ -17,6 +17,7 @@ interface FilterSidebarProps {
   onToggleCategory: (category: string) => void;
   onToggleView: (key: keyof ViewFlags) => void;
   onSortChange: (sortBy: SortBy) => void;
+  onMaxPriceChange: (maxPrice: number) => void;
   onReset: () => void;
   onClose: () => void;
 }
@@ -25,6 +26,7 @@ const SORT_OPTIONS: { value: SortBy; label: string }[] = [
   { value: 'default', label: 'Default' },
   { value: 'price-asc', label: 'Price: Low to High' },
   { value: 'price-desc', label: 'Price: High to Low' },
+  { value: 'title', label: 'Title' },
   { value: 'stock', label: 'Availability' },
 ];
 
@@ -33,9 +35,6 @@ const SORT_OPTIONS: { value: SortBy; label: string }[] = [
  *
  * Sections are divided by hairline rules and headed by small caps dark enough to
  * scan, so the three groups read as separate without heavy chrome.
- *
- * The price range is presentational: no action feeds it yet, so it is disabled
- * rather than moving without effect.
  */
 export default function FilterSidebar({
   filters,
@@ -48,12 +47,14 @@ export default function FilterSidebar({
   onToggleCategory,
   onToggleView,
   onSortChange,
+  onMaxPriceChange,
   onReset,
   onClose,
 }: FilterSidebarProps) {
   const isDefault =
     selected.length === 0 &&
     filters.searchQuery.trim() === '' &&
+    filters.maxPrice === MAX_PRICE &&
     filters.sortBy === 'default' &&
     !views.wishlistOnly &&
     !views.soldOnly;
@@ -122,11 +123,11 @@ export default function FilterSidebar({
         type="range"
         min={0}
         max={MAX_PRICE}
+        step={5}
         value={filters.maxPrice}
-        disabled
-        readOnly
+        onChange={(event) => onMaxPriceChange(Number(event.target.value))}
         aria-label="Maximum price"
-        className="mt-3 w-full cursor-not-allowed accent-[#2563EB] opacity-50"
+        className="mt-3 w-full accent-[#2563EB]"
       />
       <div className="mt-1.5 flex items-center justify-between text-[11px] text-[#94A3B8]">
         <span>$0</span>

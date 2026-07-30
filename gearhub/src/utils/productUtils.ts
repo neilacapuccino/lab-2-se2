@@ -1,4 +1,4 @@
-import { SALE_MULTIPLIER } from '../types';
+import { MAX_PRICE, SALE_MULTIPLIER } from '../types';
 import type { CartItem, Filters, Product, SortBy, ViewFlags } from '../types';
 
 /**
@@ -33,6 +33,30 @@ export const listPrice = (price: number): number =>
 // discountPercent :: Number -> Number
 export const discountPercent = (price: number): number =>
   Math.round((1 - price / listPrice(price)) * 100);
+
+/* ---------- cart totals ---------- */
+
+/**
+ * These take the line items to total as an argument rather than reading the cart
+ * themselves, so the same functions total a live cart and a completed order's
+ * receipt.
+ */
+
+// cartCount :: [CartItem] -> Number
+export const cartCount = (items: CartItem[]): number =>
+  items.reduce((sum, item) => sum + item.quantity, 0);
+
+// cartSubtotal :: [CartItem] -> Number
+export const cartSubtotal = (items: CartItem[]): number =>
+  items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+/**
+ * What the shopper actually pays. Shipping is free on every order, so this
+ * equals the subtotal today — it stays a function of its own so a shipping or
+ * tax line has one place to go.
+ */
+// cartGrandTotal :: [CartItem] -> Number
+export const cartGrandTotal = (items: CartItem[]): number => cartSubtotal(items);
 
 /* ---------- stock ---------- */
 
@@ -112,6 +136,8 @@ export function sortProducts(sortBy: SortBy, products: Product[]): Product[] {
       return copy.sort((a, b) => a.price - b.price);
     case 'price-desc':
       return copy.sort((a, b) => b.price - a.price);
+    case 'title':
+      return copy.sort((a, b) => a.name.localeCompare(b.name));
     case 'stock':
       // Most stock first, so anything nearly gone drops to the bottom.
       return copy.sort((a, b) => b.stock - a.stock || a.name.localeCompare(b.name));
@@ -135,6 +161,7 @@ export function hasQuery(
   return (
     categories.length > 0 ||
     filters.searchQuery.trim().length > 0 ||
+    filters.maxPrice < MAX_PRICE ||
     views.wishlistOnly ||
     views.soldOnly
   );
