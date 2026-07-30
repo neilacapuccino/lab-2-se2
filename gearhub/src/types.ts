@@ -22,7 +22,7 @@ export interface CartItem extends Product {
  * but the feature list also asks to "sort products by price (low-to-high,
  * high-to-low) or title". 'title' is included here so both can be satisfied.
  */
-export type SortBy = 'default' | 'price-asc' | 'price-desc' | 'stock';
+export type SortBy = 'default' | 'price-asc' | 'price-desc' | 'title' | 'stock';
 
 /** Extra views layered on top of the category selection. */
 export interface ViewFlags {

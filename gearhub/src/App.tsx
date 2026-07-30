@@ -3,11 +3,12 @@ import { Route, Routes } from "react-router-dom";
 import NavBar from "./components/layout/NavBar";
 import DashboardPage from "./pages/dashboardPage";
 import { products } from "./data/products";
-import { MAX_PRICE } from "./types";
-import type { CartItem, Filters, Product, SortBy, ViewFlags } from "./types";
+import type { CartItem, Product, SortBy, ViewFlags } from "./types";
 import { isSoldOut } from "./utils/productUtils";
 import { countByCategory } from "./utils/productUtils";
 import { WIDE_LAYOUT, useMediaQuery } from "./utils/useMediaQuery";
+import { useFilters } from "./context/FilterContext";
+import { useApp } from "./context/AppState";
 
 /**
  * Holds the app state for now. Every handler below already updates state
@@ -15,13 +16,10 @@ import { WIDE_LAYOUT, useMediaQuery } from "./utils/useMediaQuery";
  * them into `appStateReducer` with no behaviour change.
  */
 function App() {
-  const [filters, setFilters] = useState<Filters>({
-    searchQuery: "",
-    category: "All",
-    maxPrice: MAX_PRICE,
-    sortBy: "default",
-  });
-  const [cart, setCart] = useState<CartItem[]>([]);
+  const { filters, dispatch } = useFilters();
+  const { state, dispatch: appDispatch } = useApp();
+  const { cart, isCartOpen } = state;
+  const [receipt, setReceipt] = useState<CartItem[] | null>(null);
   /**
    * The sidebar allows several categories at once, which a single string cannot
    * express — so the multi-selection lives here and `filters.category` is kept
@@ -39,7 +37,6 @@ function App() {
   // Both panels start closed on every load, so the featured view gets the full
   // width and nothing is open that the visitor did not open themselves.
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const isWide = useMediaQuery(WIDE_LAYOUT);
 
@@ -47,25 +44,22 @@ function App() {
   // grid, so opening one closes the other.
   const openFilter = (next: boolean) => {
     setIsFilterOpen(next);
-    if (next && !isWide) setIsCartOpen(false);
+    if (next && !isWide) appDispatch({ type: "TOGGLE_CART", payload: false });
   };
 
   const openCart = (next: boolean) => {
-    setIsCartOpen(next);
+    appDispatch({ type: "TOGGLE_CART", payload: next });
     if (next && !isWide) setIsFilterOpen(false);
   };
 
   // SET_SEARCH_QUERY
   const setSearchQuery = (searchQuery: string) =>
-    setFilters((current) => ({ ...current, searchQuery }));
+    dispatch({ type: "SET_SEARCH_QUERY", payload: searchQuery });
 
   // Mirrors the multi-selection into the single-value field the spec defines:
   // one named pick shows that category, anything else falls back to "All".
   const syncCategoryField = (next: string[]) =>
-    setFilters((current) => ({
-      ...current,
-      category: next.length === 1 ? next[0] : "All",
-    }));
+    dispatch({ type: "SET_CATEGORY", payload: next.length === 1 ? next[0] : "All" });
 
   // SET_CATEGORY — from the nav dropdown, which is single-choice.
   const setCategory = (category: string) => {
@@ -96,34 +90,28 @@ function App() {
 
 
   // SET_SORT
-  const setSort = (sortBy: SortBy) =>
-    setFilters((current) => ({ ...current, sortBy }));
+  const setSort = (sortBy: SortBy) => dispatch({ type: "SET_SORT", payload: sortBy });
 
   /**
    * ADD_TO_CART — increments when already a line item, and refuses once the
    * cart holds every unit that exists. The grid counts stock down as it fills;
    * the cart keeps showing the quantity taken.
    */
-  const addToCart = (product: Product) =>
-    setCart((current) => {
-      const existing = current.find((item) => item.id === product.id);
-      const held = existing?.quantity ?? 0;
+  const addToCart = (product: Product) => {
+    const existing = cart.find((item) => item.id === product.id);
+    const held = existing?.quantity ?? 0;
 
-      if (held >= product.stock) {
-        setNotice(
-          product.stock === 0
-            ? `${product.name} is out of stock.`
-            : `Only ${product.stock} of ${product.name} available — all of them are already in your cart.`,
-        );
-        return current;
-      }
+    if (held >= product.stock) {
+      setNotice(
+        product.stock === 0
+          ? `${product.name} is out of stock.`
+          : `Only ${product.stock} of ${product.name} available — all of them are already in your cart.`,
+      );
+      return;
+    }
 
-      return existing
-        ? current.map((item) =>
-            item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item,
-          )
-        : [...current, { ...product, quantity: 1 }];
-    });
+    appDispatch({ type: "ADD_TO_CART", payload: product });
+  };
 
   const toggleWishlist = (id: string) =>
     setWishlist((current) =>
@@ -134,12 +122,9 @@ function App() {
     setViews((current) => ({ ...current, [key]: !current[key] }));
 
   // UPDATE_QUANTITY — drops the line item once the quantity reaches zero.
-  const updateQuantity = (id: string, quantity: number) =>
-    setCart((current) =>
-      quantity <= 0
-        ? current.filter((item) => item.id !== id)
-        : current.map((item) => (item.id === id ? { ...item, quantity } : item)),
-    );
+  const updateQuantity = (id: string, quantity: number) => {
+    appDispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity } });
+  };
 
   const increment = (id: string) => {
     const item = cart.find((entry) => entry.id === id);
@@ -158,21 +143,22 @@ function App() {
   };
 
   // REMOVE_FROM_CART
-  const removeFromCart = (id: string) =>
-    setCart((current) => current.filter((item) => item.id !== id));
+  const removeFromCart = (id: string) => {
+    appDispatch({ type: "REMOVE_FROM_CART", payload: id });
+  };
 
   // CLEAR_CART — the design has no control for this, so the drawer adds one.
-  const clearCart = () => setCart([]);
+  const clearCart = () => appDispatch({ type: "CLEAR_CART" });
+
+  const closeCart = () => {
+    setReceipt(null);
+    appDispatch({ type: "TOGGLE_CART", payload: false });
+  };
 
   // Returns all three filter actions to their defaults in one step.
   const resetFilters = () => {
     setSelected([]);
-    setFilters((current) => ({
-      ...current,
-      searchQuery: "",
-      category: "All",
-      sortBy: "default",
-    }));
+    dispatch({ type: "RESET_FILTERS" });
   };
 
   // Clicking the logo returns the page to how it looks on a fresh load: filters
@@ -181,13 +167,15 @@ function App() {
   const goHome = () => {
     resetFilters();
     setIsFilterOpen(false);
-    setIsCartOpen(false);
+    appDispatch({ type: "TOGGLE_CART", payload: false });
   };
 
   // The simulated checkout. Part 6 adds the confirmation view.
   const checkout = () => {
-    clearCart();
-    openCart(false);
+    if (cart.length === 0) return;
+    setReceipt(cart);
+    appDispatch({ type: "CLEAR_CART" });
+    openCart(true);
   };
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -254,8 +242,9 @@ function App() {
               onResetFilters={resetFilters}
               onCheckout={checkout}
               onCloseFilter={() => openFilter(false)}
-              onCloseCart={() => openCart(false)}
+              onCloseCart={closeCart}
               onOpenFilter={() => openFilter(true)}
+              receipt={receipt}
             />
           }
         />

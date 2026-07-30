@@ -3,6 +3,7 @@ import Dropdown from './Dropdown';
 import { Check, Heart, X } from './icons';
 import { CATEGORIES, MAX_PRICE } from '../types';
 import type { Filters, SortBy, ViewFlags } from '../types';
+import { useFilters } from '../context/FilterContext';
 import { formatPrice } from '../utils/productUtils';
 
 interface FilterSidebarProps {
@@ -25,6 +26,7 @@ const SORT_OPTIONS: { value: SortBy; label: string }[] = [
   { value: 'default', label: 'Default' },
   { value: 'price-asc', label: 'Price: Low to High' },
   { value: 'price-desc', label: 'Price: High to Low' },
+  { value: 'title', label: 'Title' },
   { value: 'stock', label: 'Availability' },
 ];
 
@@ -38,7 +40,6 @@ const SORT_OPTIONS: { value: SortBy; label: string }[] = [
  * rather than moving without effect.
  */
 export default function FilterSidebar({
-  filters,
   selected,
   views,
   counts,
@@ -51,10 +52,12 @@ export default function FilterSidebar({
   onReset,
   onClose,
 }: FilterSidebarProps) {
+  const { filters: contextFilters, dispatch } = useFilters();
+
   const isDefault =
     selected.length === 0 &&
-    filters.searchQuery.trim() === '' &&
-    filters.sortBy === 'default' &&
+    contextFilters.searchQuery.trim() === '' &&
+    contextFilters.sortBy === 'default' &&
     !views.wishlistOnly &&
     !views.soldOnly;
 
@@ -122,15 +125,17 @@ export default function FilterSidebar({
         type="range"
         min={0}
         max={MAX_PRICE}
-        value={filters.maxPrice}
-        disabled
-        readOnly
+        step={5}
+        value={contextFilters.maxPrice}
+        onChange={(e) =>
+          dispatch({ type: 'SET_MAX_PRICE', payload: Number(e.target.value) })
+        }
         aria-label="Maximum price"
-        className="mt-3 w-full cursor-not-allowed accent-[#2563EB] opacity-50"
+        className="mt-3 w-full accent-[#2563EB]"
       />
       <div className="mt-1.5 flex items-center justify-between text-[11px] text-[#94A3B8]">
         <span>$0</span>
-        <span className="tabular-nums">{formatPrice(filters.maxPrice)}</span>
+        <span className="tabular-nums">{formatPrice(contextFilters.maxPrice)}</span>
       </div>
 
       <Divider />
@@ -158,9 +163,9 @@ export default function FilterSidebar({
       <SectionLabel>Sort By</SectionLabel>
       <div className="mt-3">
         <Dropdown
-          value={filters.sortBy}
+          value={contextFilters.sortBy}
           options={SORT_OPTIONS}
-          onChange={onSortChange}
+          onChange={(v) => dispatch({ type: 'SET_SORT', payload: v })}
           label="Sort products"
         />
       </div>

@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
-import { Minus, Plus, ShoppingCart, Trash, X } from './icons';
+import { Minus, Plus, Trash, X } from './icons';
 import type { CartItem } from '../types';
 import { formatPrice } from '../utils/productUtils';
 
 interface CartDrawerProps {
   items: CartItem[];
+  receipt: CartItem[] | null;
   subtotal: number;
   grandTotal: number;
   onIncrement: (id: string) => void;
@@ -25,6 +26,7 @@ interface CartDrawerProps {
  */
 export default function CartDrawer({
   items,
+  receipt,
   subtotal,
   grandTotal,
   onIncrement,
@@ -34,14 +36,16 @@ export default function CartDrawer({
   onCheckout,
   onClose,
 }: CartDrawerProps) {
+  const orderComplete = receipt && items.length === 0;
+  const displayItems = orderComplete ? receipt : items;
   return (
     <aside className="flex h-full w-[360px] shrink-0 flex-col border-l border-[#E2E8F0] bg-white">
       <header className="flex items-center justify-between px-6 pt-6 pb-4">
         <h2 className="text-[15px] font-semibold tracking-tight text-[#0F172A]">
-          Shopping Cart
-          {items.length > 0 && (
+          {orderComplete ? 'Order complete' : 'Shopping Cart'}
+          {displayItems.length > 0 && (
             <span className="ml-2 text-[13px] font-normal text-[#94A3B8]">
-              {items.length}
+              {displayItems.length}
             </span>
           )}
         </h2>
@@ -68,19 +72,38 @@ export default function CartDrawer({
       </header>
 
       <div className="no-scrollbar flex-1 overflow-y-auto px-6">
-        {items.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-3 pb-10 text-center">
-            <span className="flex size-12 items-center justify-center rounded-full bg-[#F8FAFC]">
-              <ShoppingCart className="size-5 text-[#CBD5E1]" />
+        {orderComplete ? (
+          <div className="flex h-full flex-col gap-4 pb-10 pt-6 text-center">
+            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#D1FAE5] text-[#166534]">
+              ✓
             </span>
-            <p className="text-[13px] font-medium text-[#475569]">Your cart is empty</p>
-            <p className="max-w-[200px] text-[12px] leading-relaxed text-[#94A3B8]">
-              Items you add will appear here.
+            <h3 className="text-[15px] font-semibold text-[#0F172A]">Order complete</h3>
+            <p className="max-w-[240px] mx-auto text-[12px] leading-relaxed text-[#475569]">
+              Thank you for your order. Here is your receipt.
             </p>
+            <ul className="divide-y divide-[#F1F5F9]">
+              {displayItems.map((item) => (
+                <li key={item.id} className="flex items-center justify-between py-3 text-left">
+                  <div>
+                    <p className="text-[13px] font-medium text-[#0F172A]">{item.name}</p>
+                    <p className="text-[11px] text-[#94A3B8]">Qty {item.quantity}</p>
+                  </div>
+                  <span className="text-[13px] font-semibold text-[#0F172A] tabular-nums">
+                    {formatPrice(item.price * item.quantity)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4 flex items-center justify-between border-t border-[#E2E8F9] pt-4">
+              <p className="text-[13px] font-medium text-[#475569]">Total</p>
+              <p className="text-[14px] font-semibold text-[#0F172A] tabular-nums">
+                {formatPrice(grandTotal)}
+              </p>
+            </div>
           </div>
         ) : (
           <ul className="divide-y divide-[#F1F5F9]">
-            {items.map((item) => (
+            {displayItems.map((item) => (
               <li key={item.id} className="group flex gap-3 py-4">
                 <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#F8FAFC]">
                   {item.image ? (
@@ -170,11 +193,11 @@ export default function CartDrawer({
 
         <button
           type="button"
-          onClick={onCheckout}
-          disabled={items.length === 0}
+          onClick={orderComplete ? onClose : onCheckout}
+          disabled={!orderComplete && items.length === 0}
           className="w-full cursor-pointer rounded-xl bg-[#2563EB] py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#1D4ED8] disabled:cursor-not-allowed disabled:bg-[#E2E8F0] disabled:text-[#94A3B8]"
         >
-          Checkout
+          {orderComplete ? 'Close' : 'Checkout'}
         </button>
       </footer>
     </aside>
