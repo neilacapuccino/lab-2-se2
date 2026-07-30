@@ -1,4 +1,4 @@
-import { SALE_MULTIPLIER } from '../types';
+import { MAX_PRICE, SALE_MULTIPLIER } from '../types';
 import type { CartItem, Filters, Product, SortBy, ViewFlags } from '../types';
 
 /**
@@ -112,6 +112,8 @@ export function sortProducts(sortBy: SortBy, products: Product[]): Product[] {
       return copy.sort((a, b) => a.price - b.price);
     case 'price-desc':
       return copy.sort((a, b) => b.price - a.price);
+    case 'title':
+      return copy.sort((a, b) => a.name.localeCompare(b.name));
     case 'stock':
       // Most stock first, so anything nearly gone drops to the bottom.
       return copy.sort((a, b) => b.stock - a.stock || a.name.localeCompare(b.name));
@@ -135,6 +137,7 @@ export function hasQuery(
   return (
     categories.length > 0 ||
     filters.searchQuery.trim().length > 0 ||
+    filters.maxPrice < MAX_PRICE ||
     views.wishlistOnly ||
     views.soldOnly
   );

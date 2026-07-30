@@ -33,6 +33,7 @@ interface DashboardPageProps {
   onCloseFilter: () => void;
   onCloseCart: () => void;
   onOpenFilter: () => void;
+  receipt: CartItem[] | null;
 }
 
 /**
@@ -68,6 +69,7 @@ export default function DashboardPage({
   onCloseFilter,
   onCloseCart,
   onOpenFilter,
+  receipt,
 }: DashboardPageProps) {
   const isWide = useMediaQuery(WIDE_LAYOUT);
 
@@ -132,6 +134,7 @@ export default function DashboardPage({
       <Panel open={isCartOpen} floating={!isWide} side="right" onDismiss={onCloseCart}>
         <CartDrawer
           items={cart}
+          receipt={receipt}
           subtotal={subtotal}
           grandTotal={subtotal}
           onIncrement={onIncrement}
