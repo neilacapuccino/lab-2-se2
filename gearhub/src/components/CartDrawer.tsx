@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Minus, Plus, Trash, X } from './icons';
+import { Check, Minus, Plus, Trash, X } from './icons';
 import type { CartItem } from '../types';
 import { cartGrandTotal, cartSubtotal, formatPrice } from '../utils/productUtils';
 
@@ -15,13 +15,7 @@ interface CartDrawerProps {
   onClose: () => void;
 }
 
-/**
- * Right cart panel — 360px wide, matching the cart-drawer frame in Figma.
- *
- * Line items are separated by hairline rules rather than boxed in cards: with a
- * thumbnail, two prices, a stepper and a delete control on every row, borders
- * around each one turn a short list into visual noise.
- */
+/** Right cart panel — 360px wide, matching the cart-drawer frame in Figma. */
 export default function CartDrawer({
   items,
   receipt,
@@ -35,8 +29,7 @@ export default function CartDrawer({
   const orderComplete = receipt !== null && items.length === 0;
   const displayItems = orderComplete ? receipt : items;
 
-  // Totalled from whatever is on screen, so a completed order's receipt shows
-  // what was paid rather than the emptied cart's zero.
+  // Totalled from what is on screen, so a receipt shows what was paid.
   const subtotal = cartSubtotal(displayItems);
   const grandTotal = cartGrandTotal(displayItems);
 
@@ -75,14 +68,26 @@ export default function CartDrawer({
 
       <div className="no-scrollbar flex-1 overflow-y-auto px-6">
         {orderComplete ? (
-          <div className="flex h-full flex-col gap-4 pb-10 pt-6 text-center">
-            <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#D1FAE5] text-[#166534]">
-              ✓
+          <div className="flex h-full flex-col pt-8 pb-10 text-center">
+            {/*
+              The badge
+            */}
+            <span className="relative mx-auto flex size-16 items-center justify-center">
+              <span
+                aria-hidden="true"
+                className="order-badge-ring absolute inset-0 rounded-full bg-[#16A34A]"
+              />
+              <span className="order-badge relative flex size-14 items-center justify-center rounded-full bg-[#16A34A] text-white shadow-[0_6px_18px_rgba(22,163,74,0.30)]">
+                <Check className="order-badge-check size-7" strokeWidth={2.5} />
+              </span>
             </span>
-            <h3 className="text-[15px] font-semibold text-[#0F172A]">Order complete</h3>
-            <p className="max-w-[240px] mx-auto text-[12px] leading-relaxed text-[#475569]">
+
+            <h3 className="mt-5 text-[15px] font-semibold text-[#0F172A]">Order complete</h3>
+            <p className="mx-auto mt-1.5 max-w-[240px] text-[12px] leading-relaxed text-[#64748B]">
               Thank you for your order. Here is your receipt.
             </p>
+
+            <hr className="mt-6 border-0 border-t border-[#F1F5F9]" />
             <ul className="divide-y divide-[#F1F5F9]">
               {displayItems.map((item) => (
                 <li key={item.id} className="flex items-center justify-between py-3 text-left">
@@ -96,9 +101,9 @@ export default function CartDrawer({
                 </li>
               ))}
             </ul>
-            <div className="mt-4 flex items-center justify-between border-t border-[#E2E8F9] pt-4">
+            <div className="mt-4 flex items-center justify-between border-t border-[#E2E8F0] pt-4">
               <p className="text-[13px] font-medium text-[#475569]">Total</p>
-              <p className="text-[14px] font-semibold text-[#0F172A] tabular-nums">
+              <p className="text-[15px] font-semibold text-[#0F172A] tabular-nums">
                 {formatPrice(grandTotal)}
               </p>
             </div>
@@ -152,9 +157,8 @@ export default function CartDrawer({
                       <span className="w-6 text-center text-[12px] font-semibold text-[#0F172A] tabular-nums">
                         {item.quantity}
                       </span>
-                      {/* Left clickable at the ceiling on purpose: pressing it
-                          explains why nothing happened, which a dead disabled
-                          button cannot do. */}
+                      {/* Clickable at the ceiling on purpose: it explains why
+                          nothing happened, which a disabled button cannot. */}
                       <Stepper
                         label={`Increase ${item.name}`}
                         onClick={() => onIncrement(item.id)}
@@ -176,8 +180,7 @@ export default function CartDrawer({
       </div>
 
       <footer className="px-6 pt-4 pb-6">
-        {/* The receipt carries its own total, so the running one is dropped
-            once the order is placed rather than repeated underneath it. */}
+        {/* The receipt carries its own total, so this one drops away. */}
         {!orderComplete && (
           <dl className="mb-4 flex flex-col gap-2.5 text-[13px]">
             <div className="flex justify-between">

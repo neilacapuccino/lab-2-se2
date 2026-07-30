@@ -1,12 +1,6 @@
 import { Check, Heart, Plus } from './icons';
 import type { CartItem, Product } from '../types';
-import {
-  cartQuantity,
-  discountPercent,
-  formatPrice,
-  listPrice,
-  remainingStock,
-} from '../utils/productUtils';
+import { cartQuantity, formatPrice, listPrice, remainingStock } from '../utils/productUtils';
 
 interface ProductCardProps {
   product: Product;
@@ -17,14 +11,8 @@ interface ProductCardProps {
 }
 
 /**
- * One product tile.
- *
- * The image sits on white so cut-out product shots blend into the card instead
- * of floating on a grey panel; a hairline frame and a soft inner tint keep it
- * from reading as a blank rectangle.
- *
- * Stock is shown quietly — a small line under the price — and only turns
- * emphatic when it is nearly gone or exhausted.
+ * One product tile. The image sits on white so cut-out shots blend in; stock is
+ * shown quietly under the price and only turns emphatic when nearly gone.
  */
 export default function ProductCard({
   product,
@@ -36,8 +24,8 @@ export default function ProductCard({
   const inCart = cartQuantity(cart, product.id);
   const left = remainingStock(product, cart);
   const soldOut = left === 0;
-  const was = listPrice(product.price);
-  const off = discountPercent(product.price);
+  const was = listPrice(product);
+  const off = product.discount;
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-xl border border-[#E2E8F0] bg-white transition-all duration-200 hover:-translate-y-0.5 hover:border-[#CBD5E1] hover:shadow-[0_10px_28px_rgba(15,23,42,0.10)]">
@@ -71,8 +59,8 @@ export default function ProductCard({
           </span>
         )}
 
-        {/* Wishlist control: hidden until the card is hovered or focused, and
-            kept visible once the item is actually wishlisted. */}
+        {/* Hidden until hover or focus, then kept visible once wishlisted — the
+            disc takes a rose tint so saved items read at a glance. */}
         <button
           type="button"
           onClick={() => onToggleWishlist(product.id)}
@@ -80,7 +68,7 @@ export default function ProductCard({
           aria-label={wishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
           className={`absolute bottom-2.5 left-2.5 flex size-8 cursor-pointer items-center justify-center rounded-full border transition-all focus-visible:opacity-100 ${
             wishlisted
-              ? 'border-[#FECDD3] bg-white text-[#E11D48] opacity-100'
+              ? 'border-[#FDA4AF] bg-[#FFE4E6] text-[#E11D48] opacity-100 shadow-[0_1px_4px_rgba(225,29,72,0.18)] hover:bg-[#FECDD3]'
               : 'border-[#E2E8F0] bg-white/90 text-[#94A3B8] opacity-0 group-hover:opacity-100 hover:text-[#E11D48]'
           }`}
         >

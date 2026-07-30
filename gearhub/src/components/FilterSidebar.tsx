@@ -1,13 +1,12 @@
 import type { ReactNode } from 'react';
-import Dropdown from './Dropdown';
 import { Check, Heart, X } from './icons';
 import { CATEGORIES, MAX_PRICE } from '../types';
-import type { Filters, SortBy, ViewFlags } from '../types';
+import type { Filters, ViewFlags } from '../types';
 import { formatPrice } from '../utils/productUtils';
 
 interface FilterSidebarProps {
   filters: Filters;
-  /** Empty means no category filter, which lights up the All row. */
+  /** Empty means no category filter, which leaves every row unlit. */
   selected: string[];
   views: ViewFlags;
   counts: Record<string, number>;
@@ -16,25 +15,24 @@ interface FilterSidebarProps {
   soldCount: number;
   onToggleCategory: (category: string) => void;
   onToggleView: (key: keyof ViewFlags) => void;
-  onSortChange: (sortBy: SortBy) => void;
   onMaxPriceChange: (maxPrice: number) => void;
   onReset: () => void;
   onClose: () => void;
 }
 
-const SORT_OPTIONS: { value: SortBy; label: string }[] = [
-  { value: 'default', label: 'Default' },
-  { value: 'price-asc', label: 'Price: Low to High' },
-  { value: 'price-desc', label: 'Price: High to Low' },
-  { value: 'title', label: 'Title' },
-  { value: 'stock', label: 'Availability' },
-];
+/**
+ * The slider's fill, as a hard-stop gradient — a range track cannot be styled
+ * separately from its fill in any cross-browser way.
+ */
+// trackFill :: Number -> String
+const trackFill = (maxPrice: number): string => {
+  const filled = (maxPrice / MAX_PRICE) * 100;
+  return `linear-gradient(to right, #93B4FB 0%, #2563EB ${filled}%, #EEF2F7 ${filled}%, #EEF2F7 100%)`;
+};
 
 /**
- * Left filter rail — 240px wide, matching the sidebar frame in Figma.
- *
- * Sections are divided by hairline rules and headed by small caps dark enough to
- * scan, so the three groups read as separate without heavy chrome.
+ * Left filter rail — 240px wide, matching the sidebar frame in Figma. Three
+ * sections only; sorting lives with the results it reorders, in the grid header.
  */
 export default function FilterSidebar({
   filters,
@@ -46,16 +44,17 @@ export default function FilterSidebar({
   soldCount,
   onToggleCategory,
   onToggleView,
-  onSortChange,
   onMaxPriceChange,
   onReset,
   onClose,
 }: FilterSidebarProps) {
+  /* Zero is the off position, so the switch reads straight off the value. */
+  const priceCapped = filters.maxPrice > 0;
+
   const isDefault =
     selected.length === 0 &&
     filters.searchQuery.trim() === '' &&
-    filters.maxPrice === MAX_PRICE &&
-    filters.sortBy === 'default' &&
+    !priceCapped &&
     !views.wishlistOnly &&
     !views.soldOnly;
 
@@ -118,7 +117,30 @@ export default function FilterSidebar({
 
       <Divider />
 
-      <SectionLabel>Price Range</SectionLabel>
+      {/* Three rows: what it is, what it is set to, the control. The only
+          saturated colour is the track fill; the rest is slate. */}
+      <div className="flex items-center justify-between gap-2">
+        <SectionLabel>Max Price</SectionLabel>
+        <Switch
+          on={priceCapped}
+          label="Limit maximum price"
+          onClick={() => onMaxPriceChange(priceCapped ? 0 : MAX_PRICE)}
+        />
+      </div>
+
+      <p className="mt-2.5 text-[13px] tabular-nums">
+        {priceCapped ? (
+          <>
+            <span className="text-[#94A3B8]">Up to </span>
+            <span className="font-semibold text-[#334155]">
+              {formatPrice(filters.maxPrice)}
+            </span>
+          </>
+        ) : (
+          <span className="text-[#94A3B8]">Any price</span>
+        )}
+      </p>
+
       <input
         type="range"
         min={0}
@@ -127,12 +149,10 @@ export default function FilterSidebar({
         value={filters.maxPrice}
         onChange={(event) => onMaxPriceChange(Number(event.target.value))}
         aria-label="Maximum price"
-        className="mt-3 w-full accent-[#2563EB]"
+        aria-valuetext={priceCapped ? formatPrice(filters.maxPrice) : 'Any price'}
+        style={{ background: trackFill(filters.maxPrice) }}
+        className={`price-slider mt-3 w-full ${priceCapped ? '' : 'price-slider--off'}`}
       />
-      <div className="mt-1.5 flex items-center justify-between text-[11px] text-[#94A3B8]">
-        <span>$0</span>
-        <span className="tabular-nums">{formatPrice(filters.maxPrice)}</span>
-      </div>
 
       <Divider />
 
@@ -151,18 +171,6 @@ export default function FilterSidebar({
           active={views.soldOnly}
           onClick={() => onToggleView('soldOnly')}
           icon={<X className="size-3.5" />}
-        />
-      </div>
-
-      <Divider />
-
-      <SectionLabel>Sort By</SectionLabel>
-      <div className="mt-3">
-        <Dropdown
-          value={filters.sortBy}
-          options={SORT_OPTIONS}
-          onChange={onSortChange}
-          label="Sort products"
         />
       </div>
 
@@ -188,6 +196,36 @@ function SectionLabel({ children }: { children: ReactNode }) {
 
 function Divider() {
   return <hr className="my-5 border-0 border-t border-[#E2E8F0]" />;
+}
+
+/** Small track-and-knob switch, 32×18, for turning one filter on and off. */
+function Switch({
+  on,
+  label,
+  onClick,
+}: {
+  on: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      role="switch"
+      aria-checked={on}
+      aria-label={label}
+      className={`relative h-[18px] w-8 shrink-0 cursor-pointer rounded-full transition-colors ${
+        on ? 'bg-[#2563EB]' : 'bg-[#E2E8F0]'
+      }`}
+    >
+      <span
+        className={`absolute top-0.5 size-3.5 rounded-full bg-white shadow-sm transition-all ${
+          on ? 'left-[16px]' : 'left-0.5'
+        }`}
+      />
+    </button>
+  );
 }
 
 function ViewRow({

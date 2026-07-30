@@ -26,11 +26,8 @@ import { WIDE_LAYOUT, useMediaQuery } from "./utils/useMediaQuery";
 
 /**
  * Root component and the only place that reads the app state directly.
- *
- * Everything below receives what it needs as props, so each component below can
- * be rendered and reasoned about on its own; the reducer stays the single owner
- * of every value two components share. Each handler here is one dispatch of one
- * action creator, which keeps the mapping from interaction to action visible.
+ * Everything below takes props, so each can be reasoned about on its own, and
+ * each handler here is one dispatch — keeping interaction-to-action visible.
  */
 function App() {
   const { state, dispatch } = useAppState();
@@ -45,15 +42,14 @@ function App() {
     isFilterOpen,
     receipt,
     notice,
+    isBrowsing,
   } = state;
 
   const isWide = useMediaQuery(WIDE_LAYOUT);
 
-  /*
-   * Below the wide breakpoint there is not room for both panels and a usable
-   * grid, so opening one closes the other. The breakpoint is read from the
-   * browser, which is why this rule lives here rather than in the pure reducer.
-   */
+  /* Below the wide breakpoint there is no room for both panels and a usable
+     grid, so opening one closes the other. The breakpoint comes from the
+     browser, so the rule lives here rather than in the pure reducer. */
   const openFilters = (next: boolean) => {
     dispatch(toggleFilters(next));
     if (next && !isWide) dispatch(toggleCart(false));
@@ -64,19 +60,16 @@ function App() {
     if (next && !isWide) dispatch(toggleFilters(false));
   };
 
-  /*
-   * Clicking the logo returns the page to how it looks on a fresh load: filters
-   * cleared, both panels closed, featured view showing. The cart itself is left
-   * alone — losing what you had added would be a nasty surprise.
-   */
+  /* Back to a fresh load: filters cleared, panels closed, featured view. The
+     cart is left alone — losing what you added would be a nasty surprise. */
   const goHome = () => {
     dispatch(resetFilters());
     dispatch(toggleFilters(false));
     dispatch(toggleCart(false));
   };
 
-  // The stepper buttons read the current quantity, then set the next one; the
-  // reducer decides what happens at either end of the range.
+  // The steppers read the current quantity and set the next; the reducer
+  // decides what happens at either end of the range.
   const increment = (id: string) => {
     const item = cart.find((entry) => entry.id === id);
     if (item) dispatch(updateQuantity(id, item.quantity + 1));
@@ -136,6 +129,7 @@ function App() {
               views={views}
               wishlist={wishlist}
               soldCount={soldCount}
+              isBrowsing={isBrowsing}
               onToggleWishlist={(id) => dispatch(toggleWishlist(id))}
               onToggleView={(key) => dispatch(toggleView(key))}
               isFilterOpen={isFilterOpen}

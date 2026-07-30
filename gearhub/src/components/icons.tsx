@@ -86,11 +86,19 @@ export function Trash(props: IconProps) {
   );
 }
 
-/** Pass fill="currentColor" for the filled (wishlisted) state. */
+/**
+ * Pass fill="currentColor" for the filled (wishlisted) state.
+ *
+ * Reads as a heart at 14px because of two things: a 4-unit notch (crests y=3.6,
+ * dip y=7.6) whose halves meet in a crease, and a real point at the bottom —
+ * both sides arrive at (12,21) on a diagonal rather than flattening into a U.
+ */
 export function Heart(props: IconProps) {
   return (
     <Icon {...props}>
-      <path d="M12 20s-7-4.35-7-9.5A4.5 4.5 0 0 1 12 7.6a4.5 4.5 0 0 1 7 2.9c0 5.15-7 9.5-7 9.5z" />
+      <path
+        d="M12 21C10 18.6 3.2 14.6 3.2 9C3.2 5.6 5 3.6 7.8 3.6C9.6 3.6 10.8 5 12 7.6C13.2 5 14.4 3.6 16.2 3.6C19 3.6 20.8 5.6 20.8 9C20.8 14.6 14 18.6 12 21Z"
+      />
     </Icon>
   );
 }

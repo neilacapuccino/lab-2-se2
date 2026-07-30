@@ -1,11 +1,8 @@
 import type { Product, SortBy, ViewFlags } from '../types';
 
 /**
- * Every way the application state is allowed to change.
- *
- * The first eight entries are the action types the brief specifies, with the
- * payloads it gives. The rest are additions, each needed by a listed feature
- * that the eight cannot express on their own — see the note under the union.
+ * Every way the state is allowed to change. The first eight are the brief's,
+ * with its payloads; the rest are additions listed features need.
  */
 export type Action =
   // ---- specified by the brief ----
@@ -33,11 +30,8 @@ export type Action =
 
 /* ---------- action creators ---------- */
 
-/*
- * Call sites dispatch these rather than writing object literals inline, so a
- * mistyped action type is a compile error at one place instead of a silent
- * no-op at the point of dispatch.
- */
+/* Dispatched instead of inline object literals, so a mistyped action type is a
+   compile error in one place rather than a silent no-op at the call site. */
 
 // addToCart :: Product -> Action
 export const addToCart = (product: Product): Action => ({

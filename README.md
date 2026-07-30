@@ -5,7 +5,10 @@ sorting a product catalogue, managing a cart, and running a simulated checkout.
 State management relies entirely on React's `useReducer` combined with
 `createContext`; there is no external state library.
 
-Built for SE2123 Lab 2.
+SE2144 Lab 2. 
+Members:
+Zephaniah Raye D. Belmis - fullstack
+Denver neil alejandro - fullstack
 
 ## Running it
 
@@ -19,7 +22,7 @@ cd gearhub
 
 Install the dependencies:
 
-```bash
+```bash (optional)
 npm install
 ```
 

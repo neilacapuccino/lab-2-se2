@@ -1,17 +1,12 @@
 import { useCallback, useSyncExternalStore } from 'react';
 
 /**
- * Reports whether a CSS media query currently matches, and re-renders when that
- * changes.
+ * Whether a CSS media query matches, re-rendering when it changes. The layout
+ * needs this in JavaScript because opening one panel has to close the other on
+ * a narrow viewport — a state decision, not just a stylesheet one.
  *
- * The layout needs this in JavaScript, not just CSS: when the viewport is too
- * narrow to hold the grid alongside both panels, opening one panel has to close
- * the other. That is a state decision, so the breakpoint has to be readable from
- * the component rather than only from a stylesheet.
- *
- * `useSyncExternalStore` is the hook meant for exactly this — reading a value
- * that lives outside React. Subscribing in an effect and copying the result into
- * `useState` would work too, but it renders once with a stale value first.
+ * `useSyncExternalStore` is the hook for reading a value that lives outside
+ * React; an effect copying into `useState` renders once with a stale value.
  */
 // useMediaQuery :: String -> Boolean
 export function useMediaQuery(query: string): boolean {
@@ -26,9 +21,8 @@ export function useMediaQuery(query: string): boolean {
 
   const getSnapshot = useCallback(() => window.matchMedia(query).matches, [query]);
 
-  // There is no server render here, but the third argument is required; a narrow
-  // viewport is the safer assumption, since it floats the panels rather than
-  // reserving space for them.
+  // No server render here, but the argument is required. Narrow is the safer
+  // assumption: it floats the panels rather than reserving space for them.
   const getServerSnapshot = () => false;
 
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);

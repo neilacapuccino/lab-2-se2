@@ -1,12 +1,8 @@
-import { MAX_PRICE, SALE_MULTIPLIER } from '../types';
-import type { CartItem, Filters, Product, SortBy, ViewFlags } from '../types';
+import type { CartItem, Filters, Product, Query, SortBy } from '../types';
 
 /**
- * Pure helpers for turning the catalogue into what the grid should show.
- *
- * Every function takes its inputs as arguments and returns a new value; nothing
- * reads outside state and nothing mutates its arguments, so each can be reasoned
- * about and tested on its own.
+ * Pure helpers for turning the catalogue into what the grid shows. Each takes
+ * its inputs as arguments and returns a new value, mutating nothing.
  */
 
 // countByCategory :: [Product] -> Record String Number
@@ -25,22 +21,15 @@ export function countByCategory(products: Product[]): Record<string, number> {
 // formatPrice :: Number -> String
 export const formatPrice = (value: number): string => `$${value.toFixed(2)}`;
 
-/** The "was" price everything is discounted from. */
-// listPrice :: Number -> Number
-export const listPrice = (price: number): number =>
-  Math.round(price * SALE_MULTIPLIER * 100) / 100;
-
-// discountPercent :: Number -> Number
-export const discountPercent = (price: number): number =>
-  Math.round((1 - price / listPrice(price)) * 100);
+/** The struck-through "was" price. Derived, so the two figures cannot drift. */
+// listPrice :: Product -> Number
+export const listPrice = (product: Product): number =>
+  Math.round((product.price / (1 - product.discount / 100)) * 100) / 100;
 
 /* ---------- cart totals ---------- */
 
-/**
- * These take the line items to total as an argument rather than reading the cart
- * themselves, so the same functions total a live cart and a completed order's
- * receipt.
- */
+/* Take the items to total as an argument, so the same functions serve a live
+   cart and a completed order's receipt. */
 
 // cartCount :: [CartItem] -> Number
 export const cartCount = (items: CartItem[]): number =>
@@ -50,11 +39,8 @@ export const cartCount = (items: CartItem[]): number =>
 export const cartSubtotal = (items: CartItem[]): number =>
   items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-/**
- * What the shopper actually pays. Shipping is free on every order, so this
- * equals the subtotal today — it stays a function of its own so a shipping or
- * tax line has one place to go.
- */
+/** What the shopper pays. Equals the subtotal while shipping is free; kept
+    separate so a shipping or tax line has one place to go. */
 // cartGrandTotal :: [CartItem] -> Number
 export const cartGrandTotal = (items: CartItem[]): number => cartSubtotal(items);
 
@@ -64,10 +50,7 @@ export const cartGrandTotal = (items: CartItem[]): number => cartSubtotal(items)
 export const cartQuantity = (cart: CartItem[], id: string): number =>
   cart.find((item) => item.id === id)?.quantity ?? 0;
 
-/**
- * Units still available once what is already in the cart is accounted for. This
- * is what the grid counts down; the cart itself keeps showing the quantity taken.
- */
+/** What the grid counts down; the cart keeps showing the quantity taken. */
 // remainingStock :: Product -> [CartItem] -> Number
 export const remainingStock = (product: Product, cart: CartItem[]): number =>
   Math.max(0, product.stock - cartQuantity(cart, product.id));
@@ -78,53 +61,56 @@ export const isSoldOut = (product: Product, cart: CartItem[]): boolean =>
 
 /* ---------- filtering ---------- */
 
+// normalise :: String -> String
+const normalise = (value: string): string => value.trim().toLowerCase();
+
 // matchesSearch :: String -> Product -> Boolean
 const matchesSearch = (query: string) => (product: Product) =>
-  product.name.toLowerCase().includes(query.trim().toLowerCase());
+  product.name.toLowerCase().includes(normalise(query));
 
-/**
- * An empty selection means nothing has been picked yet — the landing view. The
- * literal 'All' entry keeps every product; any other entries keep only those
- * categories.
- */
+/** Empty or 'All' keeps everything; anything else keeps those categories. */
 // matchesCategories :: [String] -> Product -> Boolean
 const matchesCategories = (categories: string[]) => (product: Product) =>
   categories.length === 0 ||
   categories.includes('All') ||
   categories.includes(product.category);
 
+/** Zero is "any", so the far-left slider position widens rather than empties. */
 // withinBudget :: Number -> Product -> Boolean
 const withinBudget = (maxPrice: number) => (product: Product) =>
-  product.price <= maxPrice;
+  maxPrice === 0 || product.price <= maxPrice;
 
-export interface ViewContext {
-  cart: CartItem[];
-  wishlist: string[];
-  views: ViewFlags;
-}
-
-// matchesViews :: ViewContext -> Product -> Boolean
-const matchesViews = (ctx: ViewContext) => (product: Product) => {
-  if (ctx.views.wishlistOnly && !ctx.wishlist.includes(product.id)) return false;
-  if (ctx.views.soldOnly && !isSoldOut(product, ctx.cart)) return false;
+// matchesViews :: Query -> Product -> Boolean
+const matchesViews = (query: Query) => (product: Product) => {
+  if (query.views.wishlistOnly && !query.wishlist.includes(product.id)) return false;
+  if (query.views.soldOnly && !isSoldOut(product, query.cart)) return false;
   return true;
 };
 
-// filterProducts :: Filters -> [String] -> ViewContext -> [Product] -> [Product]
-export function filterProducts(
-  filters: Filters,
-  categories: string[],
-  ctx: ViewContext,
-  products: Product[],
-): Product[] {
+// filterProducts :: Query -> [Product] -> [Product]
+export function filterProducts(query: Query, products: Product[]): Product[] {
   return products
-    .filter(matchesSearch(filters.searchQuery))
-    .filter(matchesCategories(categories))
-    .filter(withinBudget(filters.maxPrice))
-    .filter(matchesViews(ctx));
+    .filter(matchesSearch(query.filters.searchQuery))
+    .filter(matchesCategories(query.categories))
+    .filter(withinBudget(query.filters.maxPrice))
+    .filter(matchesViews(query));
 }
 
-/* ---------- sorting ---------- */
+/* ---------- ordering ---------- */
+
+/**
+ * 0 when the name opens with the term, 1 when a later word does, 2 when it only
+ * appears inside — so "zo" puts "Zone Wireless" above "Razer Basilisk".
+ */
+// searchRank :: String -> Product -> Number
+const searchRank = (query: string) => (product: Product): number => {
+  const term = normalise(query);
+  const name = product.name.toLowerCase();
+
+  if (name.startsWith(term)) return 0;
+  if (name.split(/\s+/).some((word) => word.startsWith(term))) return 1;
+  return 2;
+};
 
 // sortProducts :: SortBy -> [Product] -> [Product]
 export function sortProducts(sortBy: SortBy, products: Product[]): Product[] {
@@ -138,53 +124,52 @@ export function sortProducts(sortBy: SortBy, products: Product[]): Product[] {
       return copy.sort((a, b) => b.price - a.price);
     case 'title':
       return copy.sort((a, b) => a.name.localeCompare(b.name));
-    case 'stock':
-      // Most stock first, so anything nearly gone drops to the bottom.
-      return copy.sort((a, b) => b.stock - a.stock || a.name.localeCompare(b.name));
     default:
       return copy;
   }
 }
 
+/** An explicit sort wins; otherwise a search orders by match, and the rest
+    keeps catalogue order. */
+// orderProducts :: Filters -> [Product] -> [Product]
+export function orderProducts(filters: Filters, products: Product[]): Product[] {
+  const term = normalise(filters.searchQuery);
+
+  if (filters.sortBy !== 'default' || term === '') {
+    return sortProducts(filters.sortBy, products);
+  }
+
+  const rank = searchRank(term);
+  return [...products].sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name));
+}
+
 /* ---------- composition ---------- */
 
-/**
- * The grid stays empty until the shopper narrows things down — a category, a
- * search term, or one of the view filters.
- */
-// hasQuery :: Filters -> [String] -> ViewFlags -> Boolean
-export function hasQuery(
-  filters: Filters,
-  categories: string[],
-  views: ViewFlags,
-): boolean {
+/** Whether anything is narrowing the catalogue. Nothing shows until something
+    is, so opening the rail presents an empty list, not all 151 products. */
+// hasActiveFilter :: Query -> Boolean
+export function hasActiveFilter(query: Query): boolean {
   return (
-    categories.length > 0 ||
-    filters.searchQuery.trim().length > 0 ||
-    filters.maxPrice < MAX_PRICE ||
-    views.wishlistOnly ||
-    views.soldOnly
+    query.categories.length > 0 ||
+    normalise(query.filters.searchQuery).length > 0 ||
+    query.filters.maxPrice > 0 ||
+    query.views.wishlistOnly ||
+    query.views.soldOnly
   );
 }
 
-// visibleProducts :: Filters -> [String] -> ViewContext -> [Product] -> [Product]
-export function visibleProducts(
-  filters: Filters,
-  categories: string[],
-  ctx: ViewContext,
-  products: Product[],
-): Product[] {
-  if (!hasQuery(filters, categories, ctx.views)) return [];
-  return sortProducts(filters.sortBy, filterProducts(filters, categories, ctx, products));
+// visibleProducts :: Query -> [Product] -> [Product]
+export function visibleProducts(query: Query, products: Product[]): Product[] {
+  if (!hasActiveFilter(query)) return [];
+  return orderProducts(query.filters, filterProducts(query, products));
 }
 
 /**
- * Picks a varied handful of products for the landing page: one from each
- * category before any category repeats, so the row is a cross-section of the
- * shop rather than the first N rows of the catalogue.
+ * One product per category before any repeats, so the landing row is a
+ * cross-section rather than the first N of the catalogue.
  *
- * Note: reads Math.random, so it is not pure. Call it once behind useMemo, or the
- * selection reshuffles on every state change.
+ * Reads Math.random, so not pure — call behind useMemo or it reshuffles on
+ * every state change.
  */
 // pickFeatured :: [Product] -> Number -> [Product]
 export function pickFeatured(products: Product[], count: number): Product[] {

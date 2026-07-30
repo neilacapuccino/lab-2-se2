@@ -1,5 +1,4 @@
 import { products } from '../data/products';
-import { MAX_PRICE } from '../types';
 import type { CartItem, Filters, State } from '../types';
 import { cartQuantity } from '../utils/productUtils';
 import type { Action } from './actions';
@@ -7,21 +6,16 @@ import type { Action } from './actions';
 /**
  * The single source of truth for how state changes.
  *
- * `appStateReducer` is a pure function: it reads nothing outside its two
- * arguments, mutates neither of them, and returns a fresh object built with
- * spreads and `map`/`filter`. Give it the same state and action and it returns
- * the same result every time, which is what makes the whole app's behaviour
- * testable without rendering anything.
- *
- * Anything that cannot be pure stays out: the media-query breakpoint that
- * decides whether both panels fit on screen is read in the component layer, and
- * the random stock roll happens once in `data/products.ts` at module load.
+ * Pure: reads nothing outside its two arguments, mutates neither, and builds
+ * every result with spreads and `map`/`filter`. Impure work stays out — the
+ * media-query breakpoint is read in the component layer, the random stock and
+ * discount rolls happen once in `data/products.ts`.
  */
 
 const initialFilters: Filters = {
   searchQuery: '',
   category: 'All',
-  maxPrice: MAX_PRICE,
+  maxPrice: 0, // "any" — see the note on Filters.maxPrice
   sortBy: 'default',
 };
 
@@ -36,6 +30,7 @@ export const initialState: State = {
   isFilterOpen: false,
   receipt: null,
   notice: null,
+  isBrowsing: false,
 };
 
 /* ---------- pure helpers ---------- */
@@ -44,10 +39,7 @@ export const initialState: State = {
 const toggleMembership = (list: string[], value: string): string[] =>
   list.includes(value) ? list.filter((entry) => entry !== value) : [...list, value];
 
-/**
- * "All" is exclusive: picking it drops the named categories, and picking a
- * named category drops "All". An empty result means no category filter.
- */
+/** "All" is exclusive both ways. An empty result means no category filter. */
 // nextCategories :: [String] -> String -> [String]
 const nextCategories = (current: string[], category: string): string[] => {
   if (category === 'All') return current.includes('All') ? [] : ['All'];
@@ -68,10 +60,9 @@ const categoryField = (categories: string[]): string =>
 export function appStateReducer(state: State, action: Action): State {
   switch (action.type) {
     /**
-     * Adds the product, or increments it when it is already a line item, and
-     * refuses once the cart holds every unit that exists. The stock figure is
-     * read from `state.products` rather than the payload, so the ceiling cannot
-     * be raised by dispatching a doctored product.
+     * Adds or increments, and refuses once the cart holds every unit. Stock is
+     * read from `state.products`, not the payload, so a doctored product cannot
+     * raise the ceiling.
      */
     case 'ADD_TO_CART': {
       const product =
@@ -106,9 +97,8 @@ export function appStateReducer(state: State, action: Action): State {
       };
 
     /**
-     * Sets an exact quantity. Zero or less removes the line item; more than the
-     * product has in stock is refused with a message rather than clamped
-     * silently, so the shopper learns why the number stopped moving.
+     * Sets an exact quantity. Zero removes the line; above stock is refused with
+     * a message rather than clamped silently, so the shopper learns why.
      */
     case 'UPDATE_QUANTITY': {
       const { id, quantity } = action.payload;
@@ -131,16 +121,20 @@ export function appStateReducer(state: State, action: Action): State {
       };
     }
 
-    /**
-     * Empties the cart. The brief's action table also has this reset a promo
-     * code, but the `State` interface it gives has no promo field and the app
-     * has no promo entry, so there is nothing further to clear.
-     */
+    /* The brief also has this reset a promo code, but the State it gives has no
+       promo field and the app has no promo entry — nothing further to clear. */
     case 'CLEAR_CART':
       return { ...state, cart: [], notice: null };
 
+    /* Every filter below also sets `isBrowsing`, moving the shopper off the
+       landing page and onto the results grid. */
+
     case 'SET_SEARCH_QUERY':
-      return { ...state, filters: { ...state.filters, searchQuery: action.payload } };
+      return {
+        ...state,
+        filters: { ...state.filters, searchQuery: action.payload },
+        isBrowsing: true,
+      };
 
     /** The nav dropdown is single-choice, so it replaces the whole selection. */
     case 'SET_CATEGORY':
@@ -148,6 +142,7 @@ export function appStateReducer(state: State, action: Action): State {
         ...state,
         filters: { ...state.filters, category: action.payload },
         selectedCategories: [action.payload],
+        isBrowsing: true,
       };
 
     case 'SET_SORT':
@@ -161,8 +156,13 @@ export function appStateReducer(state: State, action: Action): State {
       return { ...state, isCartOpen, receipt: isCartOpen ? state.receipt : null };
     }
 
+    /** Zero is the off position, so the switch and the slider share one field. */
     case 'SET_MAX_PRICE':
-      return { ...state, filters: { ...state.filters, maxPrice: action.payload } };
+      return {
+        ...state,
+        filters: { ...state.filters, maxPrice: action.payload },
+        isBrowsing: true,
+      };
 
     /** Sidebar rows toggle in and out; `filters.category` follows the result. */
     case 'TOGGLE_CATEGORY': {
@@ -172,16 +172,19 @@ export function appStateReducer(state: State, action: Action): State {
         ...state,
         selectedCategories,
         filters: { ...state.filters, category: categoryField(selectedCategories) },
+        isBrowsing: true,
       };
     }
 
-    /** Every filter at once, including the two views the sidebar lists. */
+    /* Every filter at once, views included. Returns to the landing page, since
+       nothing is left to show results for. */
     case 'RESET_FILTERS':
       return {
         ...state,
         filters: initialFilters,
         selectedCategories: [],
         views: { wishlistOnly: false, soldOnly: false },
+        isBrowsing: false,
       };
 
     case 'TOGGLE_WISHLIST':
@@ -191,23 +194,42 @@ export function appStateReducer(state: State, action: Action): State {
       return {
         ...state,
         views: { ...state.views, [action.payload]: !state.views[action.payload] },
+        isBrowsing: true,
       };
 
-    case 'TOGGLE_FILTERS':
-      return {
-        ...state,
-        isFilterOpen:
-          typeof action.payload === 'boolean' ? action.payload : !state.isFilterOpen,
-      };
+    /** Opening the rail is itself a decision to browse, so the grid takes over. */
+    case 'TOGGLE_FILTERS': {
+      const isFilterOpen =
+        typeof action.payload === 'boolean' ? action.payload : !state.isFilterOpen;
+
+      return { ...state, isFilterOpen, isBrowsing: isFilterOpen || state.isBrowsing };
+    }
 
     /**
-     * The simulated checkout. The cart becomes the receipt and is emptied in one
-     * step, so the drawer can show what was ordered after the fact.
+     * The cart becomes the receipt and is emptied, and the purchased units come
+     * off `products` for good — otherwise emptying the cart hands the stock back
+     * and a sold-out item looks available again the moment the order goes through.
      */
-    case 'CHECKOUT':
+    case 'CHECKOUT': {
       if (state.cart.length === 0) return state;
 
-      return { ...state, receipt: state.cart, cart: [], isCartOpen: true, notice: null };
+      const remaining = state.products.map((product) => {
+        const bought = cartQuantity(state.cart, product.id);
+        if (bought === 0) return product;
+
+        const stock = Math.max(0, product.stock - bought);
+        return { ...product, stock, inStock: stock > 0 };
+      });
+
+      return {
+        ...state,
+        products: remaining,
+        receipt: state.cart,
+        cart: [],
+        isCartOpen: true,
+        notice: null,
+      };
+    }
 
     case 'DISMISS_NOTICE':
       return { ...state, notice: null };

@@ -47,6 +47,131 @@
   }
 }
 
+/*
+ * Order-complete badge: the disc springs in, a ring expands and fades, the tick
+ * draws itself last. The tick uses its own length as a dash, so animating the
+ * offset to zero sweeps the stroke on. `both` holds each end state.
+ */
+@keyframes order-badge-pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes order-badge-ring {
+  0% {
+    transform: scale(0.75);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes order-badge-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@layer components {
+  /* The spring overshoots before settling, so it lands rather than arrives. */
+  .order-badge {
+    animation: order-badge-pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  .order-badge-ring {
+    animation: order-badge-ring 1100ms ease-out 260ms both;
+  }
+
+  /* 24 exceeds the tick's ~20-unit length, so the offset hides it completely.
+     The class is on the <svg>; the dash belongs to the path inside. */
+  .order-badge-check path {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    animation: order-badge-draw 320ms ease-out 220ms both;
+  }
+
+  /* Decoration, not information — everything reads the same without it. */
+  @media (prefers-reduced-motion: reduce) {
+    .order-badge,
+    .order-badge-check path {
+      animation: none;
+    }
+
+    .order-badge-check path {
+      stroke-dashoffset: 0;
+    }
+
+    .order-badge-ring {
+      animation: none;
+      opacity: 0;
+    }
+  }
+
+  /*
+   * The price slider. `accent-color` can recolour a native range input but not
+   * make it thinner, so the appearance is reset and it is rebuilt as a 4px
+   * hairline with a small white knob. The fill is a gradient set inline.
+   */
+  .price-slider {
+    appearance: none;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 9999px;
+    cursor: pointer;
+  }
+
+  /* Chrome, Safari, Edge */
+  .price-slider::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 9999px;
+    background: #ffffff;
+    border: 1.5px solid #2563eb;
+    box-shadow: 0 1px 4px rgb(15 23 42 / 0.16);
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  /* Firefox */
+  .price-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 9999px;
+    background: #ffffff;
+    border: 1.5px solid #2563eb;
+    box-shadow: 0 1px 4px rgb(15 23 42 / 0.16);
+    transition:
+      border-color 150ms ease,
+      box-shadow 150ms ease;
+  }
+
+  /* Off — the knob greys out but stays draggable, so pulling it right
+     switches the filter on. */
+  .price-slider--off::-webkit-slider-thumb {
+    border-color: #cbd5e1;
+  }
+
+  .price-slider--off::-moz-range-thumb {
+    border-color: #cbd5e1;
+  }
+
+  .price-slider:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 4px;
+  }
+}
+
 @layer utilities {
   /* Scrolls, but shows no scrollbar — for the side panels, where a visible
      track competes with the content in a narrow column. */

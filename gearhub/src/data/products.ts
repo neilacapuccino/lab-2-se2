@@ -2,31 +2,33 @@ import type { Product } from '../types';
 import catalogue from './products.json';
 
 /** The catalogue exactly as authored, matching the Product interface. */
-type CatalogueEntry = Omit<Product, 'stock'>;
+type CatalogueEntry = Omit<Product, 'stock' | 'discount'>;
 
-/**
- * Rolls a stock level for one product: usually 1-10 units, occasionally none.
- *
- * Not pure — it reads Math.random. It runs once per module load, which in a
- * browser means once per page load, so every refresh gives the shop a fresh set
- * of stock levels while the numbers stay fixed for the life of the session. That
- * matters: if stock were re-rolled on render, the cart's per-product ceiling
- * would move underneath the shopper.
+/*
+ * Both rolls read Math.random, so neither is pure. They run once per module
+ * load — a page refresh restocks and reprices the shop, but the figures hold
+ * still during a session. A stock level that moved mid-visit would shift the
+ * cart's ceiling underneath the shopper.
  */
+
+/** 1 to 10 units, never none: everything is in stock on a fresh load. */
 // rollStock :: () -> Number
 function rollStock(): number {
-  return Math.random() < 0.12 ? 0 : 1 + Math.floor(Math.random() * 10);
+  return 1 + Math.floor(Math.random() * 10);
+}
+
+/** 10% to 35% in steps of 5 — round numbers read as a deliberate sale. */
+// rollDiscount :: () -> Number
+function rollDiscount(): number {
+  return 10 + 5 * Math.floor(Math.random() * 6);
 }
 
 /**
- * Product catalogue, loaded from the static JSON file next to this module and
- * given a stock level on the way through.
- *
- * The images it points at live in `public/products/`, so their paths survive the
- * production build unchanged — which is why the data can stay as plain JSON
- * rather than a module that imports each asset.
+ * The catalogue, given a stock level and a discount on the way through. Its
+ * images live in `public/`, so the paths survive the build and the data can
+ * stay as plain JSON rather than a module importing each asset.
  */
 export const products: Product[] = (catalogue as CatalogueEntry[]).map((entry) => {
   const stock = rollStock();
-  return { ...entry, stock, inStock: stock > 0 };
+  return { ...entry, stock, inStock: stock > 0, discount: rollDiscount() };
 });

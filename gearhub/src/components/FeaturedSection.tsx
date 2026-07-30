@@ -54,12 +54,8 @@ export default function FeaturedSection({
   const categories = Object.keys(CATEGORY_ICONS);
 
   /**
-   * Eight categories and eight products both divide by four and by two, so the
-   * last row of each grid fills at every column count the capped width reaches.
-   *
-   * useMemo keeps the random pick stable — without it the row would reshuffle on
-   * every keystroke. `products` is the catalogue held in the reducer, which no
-   * action replaces, so the memo holds for the life of the page.
+   * Eight of each, so the last row fills at every column count. useMemo keeps
+   * the random pick stable — otherwise it reshuffles on every keystroke.
    */
   const featured = useMemo(() => pickFeatured(products, 8), [products]);
 

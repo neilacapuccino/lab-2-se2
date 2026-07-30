@@ -3,8 +3,8 @@ import CartDrawer from '../components/CartDrawer';
 import FeaturedSection from '../components/FeaturedSection';
 import FilterSidebar from '../components/FilterSidebar';
 import ProductGrid from '../components/ProductGrid';
-import type { CartItem, Filters, Product, SortBy, ViewFlags } from '../types';
-import { countByCategory, hasQuery, visibleProducts } from '../utils/productUtils';
+import type { CartItem, Filters, Product, Query, SortBy, ViewFlags } from '../types';
+import { countByCategory, hasActiveFilter, visibleProducts } from '../utils/productUtils';
 import { WIDE_LAYOUT, useMediaQuery } from '../utils/useMediaQuery';
 
 interface DashboardPageProps {
@@ -15,6 +15,8 @@ interface DashboardPageProps {
   views: ViewFlags;
   wishlist: string[];
   soldCount: number;
+  /** False on the landing page, true once the shopper is filtering. */
+  isBrowsing: boolean;
   onToggleWishlist: (id: string) => void;
   onToggleView: (key: keyof ViewFlags) => void;
   isFilterOpen: boolean;
@@ -38,11 +40,9 @@ interface DashboardPageProps {
 }
 
 /**
- * The single dashboard screen: filter rail, product grid and cart drawer.
- *
- * Above 1280px all three sit side by side, as in the Figma frame (240 / flexible
- * / 360). Below that the panels float over the grid with a backdrop, so the grid
- * keeps a usable width instead of being squeezed to nothing.
+ * The single dashboard screen. Above 1280px the rail, grid and drawer sit side
+ * by side as in Figma (240 / flexible / 360); below that the panels float over
+ * the grid, so it keeps a usable width instead of being squeezed to nothing.
  */
 export default function DashboardPage({
   products,
@@ -52,6 +52,7 @@ export default function DashboardPage({
   views,
   wishlist,
   soldCount,
+  isBrowsing,
   onToggleWishlist,
   onToggleView,
   isFilterOpen,
@@ -76,9 +77,10 @@ export default function DashboardPage({
   const isWide = useMediaQuery(WIDE_LAYOUT);
 
   const counts = countByCategory(products);
-  const ctx = { cart, wishlist, views };
-  const visible = visibleProducts(filters, selected, ctx, products);
-  const showingResults = hasQuery(filters, selected, views);
+
+  /* One object for the pure helpers, so a new filter changes no signatures. */
+  const query: Query = { filters, categories: selected, views, wishlist, cart };
+  const visible = visibleProducts(query, products);
 
   return (
     <div className="relative flex h-[calc(100vh-72px)] overflow-hidden bg-[#F8FAFC]">
@@ -98,7 +100,6 @@ export default function DashboardPage({
           soldCount={soldCount}
           onToggleCategory={onToggleCategory}
           onToggleView={onToggleView}
-          onSortChange={onSortChange}
           onMaxPriceChange={onMaxPriceChange}
           onReset={onResetFilters}
           onClose={onCloseFilter}
@@ -106,17 +107,18 @@ export default function DashboardPage({
       </Panel>
 
       <main className="min-w-0 flex-1 overflow-y-auto">
-        {showingResults ? (
+        {isBrowsing ? (
           <ProductGrid
             products={visible}
             cart={cart}
             wishlist={wishlist}
             filters={filters}
             selected={selected}
-            hasQuery={showingResults}
+            hasActiveFilter={hasActiveFilter(query)}
             onAddToCart={onAddToCart}
             onToggleWishlist={onToggleWishlist}
             onToggleCategory={onToggleCategory}
+            onSortChange={onSortChange}
             onClearSearch={onClearSearch}
           />
         ) : (

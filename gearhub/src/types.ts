@@ -5,12 +5,12 @@ export interface Product {
   price: number;
   image: string; // url to the product's image
   inStock: boolean;
-  /**
-   * Units available. Additive to the interface the brief specifies — `inStock`
-   * is kept and stays consistent with this (`inStock === stock > 0`), so the
-   * mandated shape is intact while the cart can enforce a per-product ceiling.
-   */
+  /* The two below are additions; the brief's fields above are untouched. */
+
+  /** Units available. Kept consistent with `inStock` (`inStock === stock > 0`). */
   stock: number;
+  /** Percentage off, rolled per session. The "was" price derives from it. */
+  discount: number;
 }
 
 export interface CartItem extends Product {
@@ -18,11 +18,10 @@ export interface CartItem extends Product {
 }
 
 /**
- * The spec's State interface lists sortBy as 'default' | 'price-asc' | 'price-desc',
- * but the feature list also asks to "sort products by price (low-to-high,
- * high-to-low) or title". 'title' is included here so both can be satisfied.
+ * The brief's union omits 'title', but its feature list asks to sort by it, so
+ * both are covered. 'default' is catalogue order, or best match when searching.
  */
-export type SortBy = 'default' | 'price-asc' | 'price-desc' | 'title' | 'stock';
+export type SortBy = 'default' | 'price-asc' | 'price-desc' | 'title';
 
 /** Extra views layered on top of the category selection. */
 export interface ViewFlags {
@@ -30,26 +29,37 @@ export interface ViewFlags {
   soldOnly: boolean;
 }
 
-/** Everything is on sale; the struck-through "was" price is derived from this. */
-export const SALE_MULTIPLIER = 1.28;
-
 
 export interface Filters {
   searchQuery: string;
   category: string;
+  /**
+   * Price ceiling, in steps of 5. **Zero means "any"**, not "nothing under $0" —
+   * the far-left slider position would otherwise empty the grid. Zero doubles as
+   * the off position, so the switch is just `maxPrice > 0` and needs no field.
+   */
   maxPrice: number;
   sortBy: SortBy;
 }
 
 /**
- * The whole of the application state.
- *
- * The four keys the brief mandates — `products`, `cart`, `filters`,
- * `isCartOpen` — are kept exactly as specified. The keys below them are
- * additions, listed separately so the mandated shape stays readable. They live
- * here rather than in component `useState` because the brief requires state
- * management to rely entirely on `useReducer` with `createContext`; anything
- * two components both need has to be reachable from the reducer.
+ * Everything the pure filter/sort helpers need, in one argument — otherwise each
+ * takes four or five positional parameters that must stay in order at every call.
+ */
+export interface Query {
+  filters: Filters;
+  /** Empty means no category filter; 'All' means every category. */
+  categories: string[];
+  views: ViewFlags;
+  wishlist: string[];
+  cart: CartItem[];
+}
+
+/**
+ * The whole of the application state. The brief's four keys come first, exactly
+ * as specified; the rest are additions. They live in the reducer rather than in
+ * component `useState` because the brief requires state management to rely
+ * entirely on `useReducer` with `createContext`.
  */
 export interface State {
   products: Product[];
@@ -58,21 +68,23 @@ export interface State {
   isCartOpen: boolean;
 
   /**
-   * The sidebar allows several categories at once, which `filters.category`
-   * (a single string) cannot express. `filters.category` is kept in step:
-   * one named pick shows that category, none or several fall back to "All".
+   * The sidebar allows several categories at once, which the single-string
+   * `filters.category` cannot express. That field is kept in step: one named
+   * pick shows that category, none or several fall back to "All".
    */
   selectedCategories: string[];
-  /** Product ids the shopper has hearted. Not in the brief; a requested extra. */
+  /** Product ids the shopper has hearted. A requested extra, not in the brief. */
   wishlist: string[];
   /** Wishlist / sold-out views, kept out of the fixed four-key `filters`. */
   views: ViewFlags;
   /** Whether the left filter rail is showing. */
   isFilterOpen: boolean;
-  /** The completed order, held so the drawer can show a receipt after checkout. */
+  /** The completed order, so the drawer can show a receipt after checkout. */
   receipt: CartItem[] | null;
   /** Transient message, e.g. when an add is refused for want of stock. */
   notice: string | null;
+  /** Featured view versus results grid. True once any filter or the rail opens. */
+  isBrowsing: boolean;
 }
 
 export const CATEGORIES = [
