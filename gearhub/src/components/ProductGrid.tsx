@@ -1,14 +1,17 @@
 import ProductCard from './ProductCard';
 import { Search, X } from './icons';
-import type { Filters, Product } from '../types';
+import type { CartItem, Filters, Product } from '../types';
 
 interface ProductGridProps {
   products: Product[];
+  cart: CartItem[];
+  wishlist: string[];
   filters: Filters;
   selected: string[];
   /** False before the shopper has chosen a category or typed a search. */
   hasQuery: boolean;
   onAddToCart: (product: Product) => void;
+  onToggleWishlist: (id: string) => void;
   onToggleCategory: (category: string) => void;
   onClearSearch: () => void;
 }
@@ -21,10 +24,13 @@ interface ProductGridProps {
  */
 export default function ProductGrid({
   products,
+  cart,
+  wishlist,
   filters,
   selected,
   hasQuery,
   onAddToCart,
+  onToggleWishlist,
   onToggleCategory,
   onClearSearch,
 }: ProductGridProps) {
@@ -68,7 +74,14 @@ export default function ProductGrid({
       {hasQuery && products.length > 0 && (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(210px,1fr))] gap-5 pb-4">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} onAddToCart={onAddToCart} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              cart={cart}
+              wishlisted={wishlist.includes(product.id)}
+              onAddToCart={onAddToCart}
+              onToggleWishlist={onToggleWishlist}
+            />
           ))}
         </div>
       )}

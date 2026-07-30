@@ -3,7 +3,7 @@ import CartDrawer from '../components/CartDrawer';
 import FeaturedSection from '../components/FeaturedSection';
 import FilterSidebar from '../components/FilterSidebar';
 import ProductGrid from '../components/ProductGrid';
-import type { CartItem, Filters, Product, SortBy } from '../types';
+import type { CartItem, Filters, Product, SortBy, ViewFlags } from '../types';
 import { countByCategory, hasQuery, visibleProducts } from '../utils/productUtils';
 import { WIDE_LAYOUT, useMediaQuery } from '../utils/useMediaQuery';
 
@@ -12,6 +12,11 @@ interface DashboardPageProps {
   cart: CartItem[];
   filters: Filters;
   selected: string[];
+  views: ViewFlags;
+  wishlist: string[];
+  soldCount: number;
+  onToggleWishlist: (id: string) => void;
+  onToggleView: (key: keyof ViewFlags) => void;
   isFilterOpen: boolean;
   isCartOpen: boolean;
   onCategoryChange: (category: string) => void;
@@ -42,6 +47,11 @@ export default function DashboardPage({
   cart,
   filters,
   selected,
+  views,
+  wishlist,
+  soldCount,
+  onToggleWishlist,
+  onToggleView,
   isFilterOpen,
   isCartOpen,
   onCategoryChange,
@@ -62,8 +72,9 @@ export default function DashboardPage({
   const isWide = useMediaQuery(WIDE_LAYOUT);
 
   const counts = countByCategory(products);
-  const visible = visibleProducts(filters, selected, products);
-  const showingResults = hasQuery(filters, selected);
+  const ctx = { cart, wishlist, views };
+  const visible = visibleProducts(filters, selected, ctx, products);
+  const showingResults = hasQuery(filters, selected, views);
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -78,9 +89,13 @@ export default function DashboardPage({
         <FilterSidebar
           filters={filters}
           selected={selected}
+          views={views}
           counts={counts}
           total={products.length}
+          wishlistCount={wishlist.length}
+          soldCount={soldCount}
           onToggleCategory={onToggleCategory}
+          onToggleView={onToggleView}
           onSortChange={onSortChange}
           onReset={onResetFilters}
           onClose={onCloseFilter}
@@ -91,18 +106,24 @@ export default function DashboardPage({
         {showingResults ? (
           <ProductGrid
             products={visible}
+            cart={cart}
+            wishlist={wishlist}
             filters={filters}
             selected={selected}
             hasQuery={showingResults}
             onAddToCart={onAddToCart}
+            onToggleWishlist={onToggleWishlist}
             onToggleCategory={onToggleCategory}
             onClearSearch={onClearSearch}
           />
         ) : (
           <FeaturedSection
             products={products}
+            cart={cart}
+            wishlist={wishlist}
             onCategoryChange={onCategoryChange}
             onAddToCart={onAddToCart}
+            onToggleWishlist={onToggleWishlist}
             onOpenFilters={onOpenFilter}
           />
         )}
