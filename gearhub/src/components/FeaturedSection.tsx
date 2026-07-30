@@ -57,10 +57,11 @@ export default function FeaturedSection({
    * Eight categories and eight products both divide by four and by two, so the
    * last row of each grid fills at every column count the capped width reaches.
    *
-   * useMemo with an empty dependency list keeps the random pick stable for the
-   * life of the page — without it the row would reshuffle on every keystroke.
+   * useMemo keeps the random pick stable — without it the row would reshuffle on
+   * every keystroke. `products` is the catalogue held in the reducer, which no
+   * action replaces, so the memo holds for the life of the page.
    */
-  const featured = useMemo(() => pickFeatured(products, 8), []);
+  const featured = useMemo(() => pickFeatured(products, 8), [products]);
 
   return (
     <div className="mx-auto flex max-w-[1200px] flex-col gap-10 px-8 py-8">

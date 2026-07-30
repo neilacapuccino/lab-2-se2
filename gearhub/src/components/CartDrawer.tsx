@@ -1,13 +1,11 @@
 import type { ReactNode } from 'react';
 import { Minus, Plus, Trash, X } from './icons';
 import type { CartItem } from '../types';
-import { formatPrice } from '../utils/productUtils';
+import { cartGrandTotal, cartSubtotal, formatPrice } from '../utils/productUtils';
 
 interface CartDrawerProps {
   items: CartItem[];
   receipt: CartItem[] | null;
-  subtotal: number;
-  grandTotal: number;
   onIncrement: (id: string) => void;
   onDecrement: (id: string) => void;
   onRemove: (id: string) => void;
@@ -27,8 +25,6 @@ interface CartDrawerProps {
 export default function CartDrawer({
   items,
   receipt,
-  subtotal,
-  grandTotal,
   onIncrement,
   onDecrement,
   onRemove,
@@ -36,8 +32,14 @@ export default function CartDrawer({
   onCheckout,
   onClose,
 }: CartDrawerProps) {
-  const orderComplete = receipt && items.length === 0;
+  const orderComplete = receipt !== null && items.length === 0;
   const displayItems = orderComplete ? receipt : items;
+
+  // Totalled from whatever is on screen, so a completed order's receipt shows
+  // what was paid rather than the emptied cart's zero.
+  const subtotal = cartSubtotal(displayItems);
+  const grandTotal = cartGrandTotal(displayItems);
+
   return (
     <aside className="flex h-full w-[360px] shrink-0 flex-col border-l border-[#E2E8F0] bg-white">
       <header className="flex items-center justify-between px-6 pt-6 pb-4">
@@ -174,22 +176,26 @@ export default function CartDrawer({
       </div>
 
       <footer className="px-6 pt-4 pb-6">
-        <dl className="mb-4 flex flex-col gap-2.5 text-[13px]">
-          <div className="flex justify-between">
-            <dt className="text-[#94A3B8]">Subtotal</dt>
-            <dd className="text-[#475569] tabular-nums">{formatPrice(subtotal)}</dd>
-          </div>
-          <div className="flex justify-between">
-            <dt className="text-[#94A3B8]">Shipping</dt>
-            <dd className="text-[#16A34A]">Free</dd>
-          </div>
-          <div className="mt-1 flex items-baseline justify-between border-t border-[#F1F5F9] pt-3">
-            <dt className="text-[14px] font-semibold text-[#0F172A]">Total</dt>
-            <dd className="text-[18px] font-bold text-[#0F172A] tabular-nums">
-              {formatPrice(grandTotal)}
-            </dd>
-          </div>
-        </dl>
+        {/* The receipt carries its own total, so the running one is dropped
+            once the order is placed rather than repeated underneath it. */}
+        {!orderComplete && (
+          <dl className="mb-4 flex flex-col gap-2.5 text-[13px]">
+            <div className="flex justify-between">
+              <dt className="text-[#94A3B8]">Subtotal</dt>
+              <dd className="text-[#475569] tabular-nums">{formatPrice(subtotal)}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-[#94A3B8]">Shipping</dt>
+              <dd className="text-[#16A34A]">Free</dd>
+            </div>
+            <div className="mt-1 flex items-baseline justify-between border-t border-[#F1F5F9] pt-3">
+              <dt className="text-[14px] font-semibold text-[#0F172A]">Total</dt>
+              <dd className="text-[18px] font-bold text-[#0F172A] tabular-nums">
+                {formatPrice(grandTotal)}
+              </dd>
+            </div>
+          </dl>
+        )}
 
         <button
           type="button"

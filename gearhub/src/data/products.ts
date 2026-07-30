@@ -30,11 +30,3 @@ export const products: Product[] = (catalogue as CatalogueEntry[]).map((entry) =
   const stock = rollStock();
   return { ...entry, stock, inStock: stock > 0 };
 });
-
-/**
- * Stands in for a network call so the reducer can handle product loading the
- * same way it would with a real endpoint.
- */
-export function fetchProducts(): Promise<Product[]> {
-  return new Promise((resolve) => setTimeout(() => resolve(products), 300));
-}

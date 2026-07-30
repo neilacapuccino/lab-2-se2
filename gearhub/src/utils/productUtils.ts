@@ -34,6 +34,30 @@ export const listPrice = (price: number): number =>
 export const discountPercent = (price: number): number =>
   Math.round((1 - price / listPrice(price)) * 100);
 
+/* ---------- cart totals ---------- */
+
+/**
+ * These take the line items to total as an argument rather than reading the cart
+ * themselves, so the same functions total a live cart and a completed order's
+ * receipt.
+ */
+
+// cartCount :: [CartItem] -> Number
+export const cartCount = (items: CartItem[]): number =>
+  items.reduce((sum, item) => sum + item.quantity, 0);
+
+// cartSubtotal :: [CartItem] -> Number
+export const cartSubtotal = (items: CartItem[]): number =>
+  items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+/**
+ * What the shopper actually pays. Shipping is free on every order, so this
+ * equals the subtotal today — it stays a function of its own so a shipping or
+ * tax line has one place to go.
+ */
+// cartGrandTotal :: [CartItem] -> Number
+export const cartGrandTotal = (items: CartItem[]): number => cartSubtotal(items);
+
 /* ---------- stock ---------- */
 
 // cartQuantity :: [CartItem] -> String -> Number
